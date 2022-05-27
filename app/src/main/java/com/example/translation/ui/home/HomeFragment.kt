@@ -66,7 +66,7 @@ class HomeFragment : Fragment(), LifecycleObserver{
             properties.show_hidden_files = true
 
             val dialog = FilePickerDialog(context,properties)
-            dialog.setTitle("Select a File")
+            dialog.setTitle("Select a Image File")
 
             dialog.setDialogSelectionListener {
                 val text = it.contentDeepToString()
@@ -91,6 +91,7 @@ class HomeFragment : Fragment(), LifecycleObserver{
                     file_dirs = file_dir.substring(0,index+1)
                 }
 
+                /*
                 customProgressDialog.show()
                 if(extensions == "docx"){
                     val intent = Intent(requireContext(),DocsActivity::class.java)
@@ -106,6 +107,8 @@ class HomeFragment : Fragment(), LifecycleObserver{
                     startActivity(intent)
                     customProgressDialog.dismiss();
                 }
+
+                 */
 
                 /*
                 val intent = Intent(requireContext(),TImageActivity::class.java)
@@ -131,6 +134,57 @@ class HomeFragment : Fragment(), LifecycleObserver{
 
             }
 
+            dialog.show()
+        }
+
+        webBtn2.setOnClickListener {
+
+            val properties2 : DialogProperties = DialogProperties()
+            properties2.selection_mode = DialogConfigs.SINGLE_MODE
+            properties2.selection_type = DialogConfigs.FILE_SELECT
+            properties2.root = File(DialogConfigs.DEFAULT_DIR)
+            properties2.error_dir = File(DialogConfigs.DEFAULT_DIR)
+            properties2.offset = File(DialogConfigs.DEFAULT_DIR)
+            properties2.extensions = arrayOf("pdf")
+            properties2.show_hidden_files = true
+
+            val dialog = FilePickerDialog(context,properties2)
+            dialog.setTitle("Select a PDF File")
+
+            dialog.setDialogSelectionListener {
+                val text = it.contentDeepToString()
+                val tmp = text.substring(1,text.length-1)
+                var file_dir : String = ""
+                var file_dirs : String = ""
+                var file_dirs2 : String = ""
+                var file_name : String = ""
+                var file_names : String = ""
+                var extensions : String = ""
+                var index : Int = 0
+                var index2 : Int = 0
+
+                for (path in it) {
+                    val file = File(path)
+                    file_name = file.name
+                    index2 = file_name.lastIndexOf(".")
+                    file_names = file_name.substring(0,index2)
+                    extensions = file_name.substring(index2+1,file_name.length)
+
+                    file_dir = file.absolutePath
+                    file_dirs = file_dir.substring(4,file_dir.length)
+                    index = file_dir.lastIndexOf("/")
+                    file_dirs2 = file_dir.substring(0,index+1)
+                }
+
+                Log.d("File-Test","$file_dirs")
+
+                val intent = Intent(requireContext(),DocsActivity::class.java)
+                intent.putExtra("pdf_dir",file_dirs)
+                intent.putExtra("pdf_dirs",file_dirs2)
+                intent.putExtra("pdf_name",file_name)
+                intent.putExtra("pdf_names",file_names)
+                startActivity(intent)
+            }
             dialog.show()
         }
     }

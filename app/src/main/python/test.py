@@ -30,7 +30,6 @@ def translate(target_Language,image_dir,file_name,efile_name):
 
     resObj = json.loads(res.text)
     imageStr = resObj.get("data").get("renderedImage")
-    imgdata = base64.b64decode(imageStr)
 
     return imageStr
 

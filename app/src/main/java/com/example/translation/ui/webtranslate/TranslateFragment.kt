@@ -1,17 +1,20 @@
 package com.example.translation.ui.webtranslate
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.view.inputmethod.EditorInfo
+import android.webkit.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.fragment.app.Fragment
+import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.example.translation.*
 import com.example.translation.databinding.FragmentTranslateBinding
 import kotlinx.android.synthetic.main.fragment_translate.*
-import android.webkit.*
-import com.example.translation.*
 
 
 var originalLanguage: String = ""
@@ -41,7 +44,40 @@ class TranslateFragment : Fragment() {
             webSettings.javaScriptEnabled = true
             webSettings.domStorageEnabled = true
 
-            binding.webView.webViewClient = WebViewClient()
+            binding.webView.webViewClient = object : WebViewClient(){
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    super.onPageStarted(view, url, favicon)
+                }
+
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    binding.urlEdit.setText(view!!.url)
+                }
+
+                override fun onLoadResource(view: WebView?, url: String?) {
+                    super.onLoadResource(view, url)
+                }
+
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                    error: WebResourceError?
+                ) {
+                    super.onReceivedError(view, request, error)
+                }
+
+                override fun shouldInterceptRequest(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): WebResourceResponse? {
+                    return super.shouldInterceptRequest(view, request)
+                }
+
+                override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                    return super.shouldOverrideUrlLoading(view, request)
+                }
+            }
+
 
             if(Build.VERSION.SDK_INT >= 19){
                 binding.webView.setLayerType(View.LAYER_TYPE_HARDWARE,null)
@@ -93,25 +129,43 @@ class TranslateFragment : Fragment() {
             }
         }
 
-        binding.dicAdd.setOnClickListener {
-            Toast.makeText(activity, originalLanguage, Toast.LENGTH_SHORT).show()
+        binding.webMenu.setOnClickListener { v ->
+            val popup: PopupMenu = PopupMenu(requireContext(), v)
+            (activity as MainActivity).menuInflater.inflate(R.menu.web_option, popup.menu)
+            popup.setOnMenuItemClickListener { item ->
+                when(item.itemId){
+                    R.id.m1 -> {
+                        Toast.makeText(requireContext(),"메뉴1",Toast.LENGTH_SHORT).show()
+                    }
+                    R.id.m2 -> {
+                        Toast.makeText(requireContext(),"메뉴2",Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(),"에러",Toast.LENGTH_SHORT).show()
+                    }
+                }
+                false
+            }
+
+            popup.show()
+
         }
 
-        binding.webClose.setOnClickListener {
-            binding.webView.clearCache(true)
-            binding.webView.clearHistory()
-            binding.webView.onPause()
-            binding.webView.removeAllViews()
-            binding.webView.destroyDrawingCache()
-            binding.webView.pauseTimers()
-            (activity as MainActivity).onBackPressed()
+        binding.urlEdit.setOnEditorActionListener { textView, i, keyEvent ->
+            if(i == EditorInfo.IME_ACTION_SEARCH){
+                val loadingUrl = textView.text.toString()
+
+                if(URLUtil.isNetworkUrl(loadingUrl)){
+                    binding.webView.loadUrl(loadingUrl)
+                    binding.urlEdit.setText(loadingUrl)
+                }else{
+                    binding.webView.loadUrl("http://$loadingUrl")
+                    binding.urlEdit.setText("http://$loadingUrl")
+                }
+            }
+
+            return@setOnEditorActionListener false
         }
-
-        binding.urlButton.setOnClickListener {
-            binding.webView.loadUrl(urlEdit.text.toString())
-        }
-
-
 
         return binding.root
     }
@@ -184,5 +238,4 @@ class TranslateFragment : Fragment() {
         (activity as MainActivity).supportActionBar?.show()
         _binding = null
     }
-
 }

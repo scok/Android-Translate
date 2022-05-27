@@ -9,24 +9,47 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#83776b"
-        android:orientation="horizontal">
-        <EditText
-            android:id="@+id/urlEdit"
+        android:layout_height="35dp"
+        android:background="@drawable/border"
+        android:elevation="2dp"
+        android:gravity="center"
+        android:orientation="vertical">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="@color/white"
-            android:hint="주소 입력"
-            android:text="https://"
-            android:layout_weight="1"/>
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/urlButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            style="@style/btnStylelivid_brown"
-            android:text="이동"
-            android:layout_weight="3.5"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/web_bookmark"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#00ff0000"
+                android:src="@drawable/baseline_star_border_black_24dp"
+                android:layout_weight="1" />
+
+            <EditText
+                android:id="@+id/urlEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@color/black"
+                android:selectAllOnFocus="true"
+                android:inputType="textUri"
+                android:ems="10"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:imeOptions="actionSearch"
+                android:paddingStart="10dp"
+                android:layout_weight="8"
+                android:background="@drawable/round_background"/>
+
+            <ImageButton
+                android:id="@+id/web_translate"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#00ff0000"
+                android:src="@drawable/baseline_translate_black_24dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -36,21 +59,21 @@
 
         <Spinner
             android:id="@+id/orginalSpinner"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textAlignment="center"
             android:layout_weight="2"/>
 
         <ImageView
             android:id="@+id/translateLanguageImage"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/baseline_arrow_right_alt_24"
             android:layout_weight="2"/>
 
         <Spinner
             android:id="@+id/targetSpinner"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textAlignment="center"
             android:layout_weight="2"/>
@@ -66,36 +89,56 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#83776b"
-        android:orientation="horizontal" >
+        android:background="@drawable/border"
+        android:elevation="2dp"
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/web_back"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/btnStylelivid_brown"
-            android:src="@drawable/outline_navigate_before_24"
-            android:layout_weight="1"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#00ff0000"
+            android:src="@drawable/baseline_chevron_left_black_36dp" />
+
         <ImageButton
             android:id="@+id/web_forward"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/btnStylelivid_brown"
-            android:src="@drawable/outline_navigate_next_24"
-            android:layout_weight="1"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#00ff0000"
+            android:src="@drawable/baseline_chevron_right_black_36dp" />
+
         <ImageButton
-            android:id="@+id/dic_add"
+            android:id="@+id/web_refresh"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/btnStylelivid_brown"
-            android:src="@drawable/outline_bookmark_add_24"
-            android:layout_weight="1"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#00ff0000"
+            android:src="@drawable/baseline_refresh_black_24dp" />
+
         <ImageButton
-            android:id="@+id/web_close"
+            android:id="@+id/web_favorites"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/btnStylelivid_brown"
-            android:src="@drawable/outline_close_24"
-            android:layout_weight="1"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#00ff0000"
+            android:src="@drawable/baseline_bookmark_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/web_tabList"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#00ff0000"
+            android:src="@drawable/baseline_tab_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/web_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#00ff0000"
+            android:src="@drawable/baseline_menu_black_24dp" />
     </LinearLayout>
 </LinearLayout>

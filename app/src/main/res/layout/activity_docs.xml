@@ -6,4 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.DocsActivity">
 
+    <WebView
+        android:id="@+id/pdfWebView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

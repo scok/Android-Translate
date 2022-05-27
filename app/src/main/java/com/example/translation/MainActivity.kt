@@ -1,36 +1,36 @@
 package com.example.translation
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.StrictMode
+import android.util.Log
 import android.view.*
 import android.webkit.ValueCallback
 import android.webkit.WebView
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import com.example.translation.databinding.ActivityMainBinding
 import com.example.translation.ui.webtranslate.ApiTranslateNmt
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.translate.Translate
 import com.google.cloud.translate.TranslateOptions
+import com.googlecode.tesseract.android.TessBaseAPI
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.*
-import android.widget.TextView
-import android.widget.Toast
-import com.googlecode.tesseract.android.TessBaseAPI
 
 
 var pref: Int = 0
@@ -577,5 +577,17 @@ class MainActivity : AppCompatActivity() {
             translateOn = false
             handler.postDelayed(this, millisTime.toLong()) // millisTiem 이후 다시
         }
+    }
+
+    public fun hideNavigationBar() {
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
+                // Set the content to appear under the system bars so that the
+                // content doesn't resize when the system bars hide and show.
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                // Hide the nav bar and status bar
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
 }

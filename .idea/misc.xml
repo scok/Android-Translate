@@ -8,9 +8,12 @@
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/baseline_arrow_right_alt_24.xml" value="0.2708333333333333" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/baseline_login_24.xml" value="0.2777777777777778" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/baseline_logout_24.xml" value="0.2777777777777778" />
+        <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/border.xml" value="0.2035" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/btn_background.xml" value="0.2537037037037037" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/button_back.xml" value="0.2462962962962963" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/button_select.xml" value="0.171" />
+        <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/ic_baseline_g_translate_24.xml" value="0.2035" />
+        <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/ic_green_ui.xml" value="0.153" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2462962962962963" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/ic_menu_camera.xml" value="0.2916666666666667" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.2916666666666667" />
@@ -58,6 +61,7 @@
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/menu/main_activity2.xml" value="0.4164102564102564" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/menu/options.xml" value="0.36574074074074076" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/menu/popup.xml" value="0.42291666666666666" />
+        <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/menu/web_option.xml" value="0.49583333333333335" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/xml/setting_border.xml" value="0.24547101449275363" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/xml/setting_preference.xml" value="0.2193515704154002" />
         <entry key="..\:/Users/wo747/AppData/Local/Android/Sdk/platforms/android-31/data/res/layout/simple_spinner_dropdown_item.xml" value="0.2254305977710233" />

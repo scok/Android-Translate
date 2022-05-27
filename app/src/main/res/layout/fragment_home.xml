@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,14 +26,48 @@
         android:textAlignment="center"
         android:textSize="30sp" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/webBtn1"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView2"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/button_back"
-        android:text="File Select" />
+        android:backgroundTint="@color/colorPrimary"
+        android:elevation="5dp"
+        android:text="Image Select"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/textView2"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@android:color/white"
+        app:icon="@drawable/ic_launcher_foreground"
+        app:iconGravity="start"
+        app:iconPadding="@dimen/cardview_compat_inset_shadow"
+        app:iconSize="50dp"
+        app:iconTint="@android:color/white"
+        app:rippleColor="@color/colorAccent"
+        app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
+        app:strokeColor="@color/colorAccent"
+        app:strokeWidth="3dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/webBtn2"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:elevation="5dp"
+        android:text="Image Select"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/webBtn1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@android:color/white"
+        app:icon="@drawable/ic_launcher_foreground"
+        app:iconGravity="start"
+        app:iconPadding="@dimen/cardview_compat_inset_shadow"
+        app:iconSize="50dp"
+        app:iconTint="@android:color/white"
+        app:rippleColor="@color/colorAccent"
+        app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
+        app:strokeColor="@color/colorAccent"
+        app:strokeWidth="3dp" />
+
 
     <!--
     <ScrollView
