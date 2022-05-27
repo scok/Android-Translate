@@ -257,11 +257,11 @@ class MainActivity : AppCompatActivity() {
                 //             "   return textString;\n" +
                 //             "})()"
                 "javascript:(function getPTagText99(){\n" +
-                        "   var tagP = document.getElementsByTagName('li');\n" +
-                        "   var textString = tagP[$tagLiIndex].innerText; \n" +
-                        "   var cord = tagP[$tagLiIndex].getBoundingClientRect(); \n" +
-                        "   return cord.y;\n" +
-                        //  "   return textString;\n" +
+                        "   var tagP = document.getElementsByTagName('p');\n" +
+                        "   var textString = tagP[0].innerText; \n" +
+                      //  "   var cord = tagP[$tagLiIndex].getBoundingClientRect(); \n" +
+                       // "   return cord.y;\n" +
+                        "   return textString;\n" +
                         "})()"
             ){value->
                 Toast.makeText(applicationContext , value.toString() , Toast.LENGTH_SHORT).show()
@@ -363,16 +363,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     val handler = Handler()
-    val millisTime = 500
+    val millisTime = 200
     val handlerTask = object : Runnable {
         override fun run() {
             // do task
             if (translateOn && fullTranslateMode ) {
                 val cusWebView2 = findViewById<WebView>(R.id.webView)
-                var translateSuccess = false
-                if(maxTagPIndex != 0) {
-                    do {
-                        translateSuccess = false
+
+                //-- PTag -- //
+                if( maxTagPIndex != 0) {
                         // scrollYCheck = scrollY+50
                         cusWebView2.evaluateJavascript(
                             "javascript:(function getPTagText2(){\n" +
@@ -386,9 +385,7 @@ class MainActivity : AppCompatActivity() {
                                     "   return cord.y;\n" +
                                     "})()"
                         ) { value ->
-                            if (tagPIndex < maxTagPIndex && value.toFloat() < innerWindowHeight) {//innerWindowHeight){
-                                tagPIndex += 1
-                                translateSuccess = true
+                            if ( tagPIndex < maxTagPIndex &&  value.toFloat() < innerWindowHeight) {//innerWindowHeight){
                                 cusWebView2.evaluateJavascript(
                                     "javascript:(function getPTagText3(){\n" +
                                             "   var tagP = document.getElementsByTagName('p');\n" +
@@ -397,13 +394,12 @@ class MainActivity : AppCompatActivity() {
                                             "})()"
                                 ) { value ->
                                     val str = value.substring(1 , value.toString().length - 1)
-                                    val translateTask = ApiTranslateNmt(str).execute().get()
-                                    //val translateTask = str
+                                    //val translateTask = ApiTranslateNmt(str).execute().get()
+                                    val translateTask = str
                                     //Toast.makeText(applicationContext , "$value" , Toast.LENGTH_SHORT).show()
                                     // val inputText = "<div>$translateTask</div>"
                                     //Toast.makeText(applicationContext , tagPIndex.toString() , Toast.LENGTH_SHORT).show()
                                     //Toast.makeText(applicationContext, translateTask+tagPIndex.toString(), Toast.LENGTH_SHORT).show()
-                                    //val translateTask = ApiTranslateNmt(str).execute().get()
                                     //Toast.makeText(applicationContext , str , Toast.LENGTH_SHORT).show()
                                     cusWebView2.evaluateJavascript(
                                         "javascript:(function translateText(){\n" +
@@ -421,7 +417,7 @@ class MainActivity : AppCompatActivity() {
                                                 // "   tagP[$tagPIndex].append($translateTask)\n" + //"${translateTask}"
                                                 "})()" , null
                                     )
-
+                                    tagPIndex += 1
                                 }
                                 /*
                                 cusWebView2.evaluateJavascript(
@@ -439,16 +435,14 @@ class MainActivity : AppCompatActivity() {
                                 )*/
 
                                 //oldTagPIndex += 1
+
                             }
                             // Toast.makeText(applicationContext , "$value&$innerWindowHeight" , Toast.LENGTH_SHORT).show()
                         }
-                    } while (translateSuccess)
                 }
 
                 //----a---!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
                 /*
-                do {
-                    var translateSuccess = false
                     cusWebView2.evaluateJavascript(
                         "javascript:(function getPTagText2(){\n" +
                                 "   var tagP = document.getElementsByTagName('a');\n" +
@@ -458,7 +452,6 @@ class MainActivity : AppCompatActivity() {
                     ) { value ->
                         if (tagAIndex < maxTagAIndex && value.toFloat() < 200) {//innerWindowHeight){
                             tagAIndex += 1
-                            translateSuccess = true
                             cusWebView2.evaluateJavascript(
                                 "javascript:(function getPTagText3(){\n" +
                                         "   var tagP = document.getElementsByTagName('a');\n" +
@@ -485,12 +478,9 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
                         }
-                    }
-                } while (translateSuccess)*/
+                    } */
                 //----Strong---!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
                 if(maxTagStrongIndex != 0) {
-                    do{
-                        translateSuccess = false
                         cusWebView2.evaluateJavascript(
                             "javascript:(function getStrongTagText2(){\n" +
                                     "   var tagP = document.getElementsByTagName('strong');\n" +
@@ -499,8 +489,6 @@ class MainActivity : AppCompatActivity() {
                                     "})()"
                         ) { value ->
                             if(tagStrongIndex < maxTagStrongIndex && value.toFloat() < innerWindowHeight){//innerWindowHeight){
-                                tagStrongIndex += 1
-                                translateSuccess = true
                                 cusWebView2.evaluateJavascript(
                                     "javascript:(function getStrongTagText3(){\n" +
                                             "   var tagP = document.getElementsByTagName('strong');\n" +
@@ -509,8 +497,8 @@ class MainActivity : AppCompatActivity() {
                                             "})()"
                                 ){ value ->
                                     val str = value.substring(1, value.toString().length-1)
-                                    val translateTask = ApiTranslateNmt(str).execute().get()
-                                    //val translateTask = str
+                                    //val translateTask = ApiTranslateNmt(str).execute().get()
+                                    val translateTask = str
                                     cusWebView2.evaluateJavascript(
                                         "javascript:(function translateText2(){\n" +
                                                 "   var tagP = document.getElementsByTagName('strong');\n" +
@@ -524,15 +512,13 @@ class MainActivity : AppCompatActivity() {
                                                 "   tagP[$tagStrongIndex].appendChild(newDiv);\n"+
                                                 "})()", null
                                     )
+                                    tagStrongIndex += 1
                                 }
                             }
                         }
-                    } while (translateSuccess)
                 }
                 //----Li li--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
                 if(maxTagLiIndex != 0) {
-                    do{
-                        translateSuccess = false
                         cusWebView2.evaluateJavascript(
                             "javascript:(function getPTagText2(){\n" +
                                     "   var tagP = document.getElementsByTagName('li');\n" +
@@ -541,8 +527,6 @@ class MainActivity : AppCompatActivity() {
                                     "})()"
                         ) { value ->
                             if(tagLiIndex < maxTagLiIndex && value.toFloat() < innerWindowHeight){//innerWindowHeight){
-                                tagLiIndex += 1
-                                translateSuccess = true
                                 cusWebView2.evaluateJavascript(
                                     "javascript:(function getPTagText3(){\n" +
                                             "   var tagP = document.getElementsByTagName('li');\n" +
@@ -552,8 +536,8 @@ class MainActivity : AppCompatActivity() {
                                 ){ value ->
                                     //Toast.makeText(applicationContext , "$value" , Toast.LENGTH_SHORT).show()
                                     val str = value.substring(1, value.toString().length-1)
-                                    val translateTask = ApiTranslateNmt(str).execute().get()
-                                    //val translateTask = str
+                                    //val translateTask = ApiTranslateNmt(str).execute().get()
+                                    val translateTask = str
                                     cusWebView2.evaluateJavascript(
                                         "javascript:(function translateText(){\n" +
                                                 "   var tagP = document.getElementsByTagName('li');\n" +
@@ -567,10 +551,10 @@ class MainActivity : AppCompatActivity() {
                                                 "   tagP[$tagLiIndex].appendChild(newDiv);\n"+
                                                 "})()", null
                                     )
+                                    tagLiIndex += 1
                                 }
                             }
                         }
-                    } while (translateSuccess)
                 }
                 //----------------------------------------//
             }
