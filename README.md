@@ -16,16 +16,11 @@
 
 ## 1.3. 사용 안내
 ### 1.3.1. 웹 뷰 실시간 번역
-<p>
-  <img src="https://img.shields.io/badge/Android-3DDC84?style=flat-square&logo=Android&logoColor=white"/>
-</p>
+
 
 ### 1.3.2. 문서 번역
 
-<p>
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=CSS3&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=Git&logoColor=white"/>
-</p>
+
 
 ### 1.3.3. PDF 번역
 
@@ -98,9 +93,16 @@
 
 ****
 # 5. 프로그램 작성자 및 도움을 준 분
+## 제작자
+    김재혁
+    김다훈
+    이건영
+## 도우미
+    
 
 ****
 # 6. 버전
+    0.3.0
 
 ***** 
 ## ○ 참고문서
