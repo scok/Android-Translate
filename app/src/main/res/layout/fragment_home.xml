@@ -8,116 +8,130 @@
     android:orientation="vertical"
     tools:context=".ui.home.HomeFragment">
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="100dp"
-        android:layout_height="80dp"
-        android:layout_above="@id/textView2"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/imagefile"/>
-
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:layout_height="114dp"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="이미지 파일을 선택하고\n 번역해보세요"
-        android:textAlignment="center"
-        android:textSize="30sp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/webBtn1"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimary"
-        android:elevation="5dp"
-        android:text="Image Select"
-        android:layout_centerInParent="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="15dp"
+        android:text="이미지 파일 번역"
+        android:textColor="@color/black"
+        android:textSize="25sp" />
+
+    <LinearLayout
+        android:id="@+id/layout_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_below="@id/textView2"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@android:color/white"
-        app:icon="@drawable/ic_launcher_foreground"
-        app:iconGravity="start"
-        app:iconPadding="@dimen/cardview_compat_inset_shadow"
-        app:iconSize="50dp"
-        app:iconTint="@android:color/white"
-        app:rippleColor="@color/colorAccent"
-        app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
-        app:strokeColor="@color/colorAccent"
-        app:strokeWidth="3dp" />
+        android:orientation="horizontal"
+        android:background="@drawable/background_shadow">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/webBtn2"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimary"
-        android:elevation="5dp"
-        android:text="PDF Select"
-        android:layout_centerInParent="true"
-        android:layout_below="@id/webBtn1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@android:color/white"
-        app:icon="@drawable/ic_launcher_foreground"
-        app:iconGravity="start"
-        app:iconPadding="@dimen/cardview_compat_inset_shadow"
-        app:iconSize="50dp"
-        app:iconTint="@android:color/white"
-        app:rippleColor="@color/colorAccent"
-        app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
-        app:strokeColor="@color/colorAccent"
-        app:strokeWidth="3dp" />
-
-
-    <!--
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
             android:orientation="vertical">
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:clickable="true"
-                android:onClick="processImage"
-                android:background="#166e78"
-                android:id="@+id/OCRButtonContainer">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="RUN OCR"
-                    android:textSize= "18dp"
-                    android:textColor="#ffffff"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true"
-                    android:clickable="true"
-                    android:onClick="processImage"/>
-
-            </RelativeLayout>
-
-            <RelativeLayout
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/OCRButtonContainer"
-                android:padding="10dp">
+                android:layout_marginStart="10dp"
+                android:text="이미지 파일을 선택하고\n한국어로 번역해보세요\n(지원 확장자 : .jpg, .png)" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="여기에 결과 출력"
-                    android:id="@+id/OCRTextView"
-                    android:textSize="15dp"
-                    android:textColor="#169cdf"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true"
-                    android:background="#fff"
-                    android:scrollbars="vertical"
-                    />
-            </RelativeLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/webBtn1"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:elevation="5dp"
+                android:text="Image Select"
+                android:layout_centerInParent="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@android:color/white"
+                app:rippleColor="@color/colorAccent"
+                app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
+                app:strokeColor="@color/colorAccent"
+                app:strokeWidth="3dp" />
+
         </LinearLayout>
-    </ScrollView>
-    -->
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="30dp"
+            android:layout_weight="1"
+            android:src="@drawable/imagefile"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_1"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="15dp"
+        android:text="PDF 파일 번역"
+        android:textColor="@color/black"
+        android:textSize="25sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_below="@id/textView3"
+        android:orientation="horizontal"
+        android:background="@drawable/background_shadow">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="PDF 파일을 선택하고\n한국어로 번역해보세요" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/webBtn2"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:elevation="5dp"
+                android:text="PDF Select"
+                android:layout_centerInParent="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@android:color/white"
+                app:rippleColor="@color/colorAccent"
+                app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
+                app:strokeColor="@color/colorAccent"
+                app:strokeWidth="3dp" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="90dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="30dp"
+            android:layout_weight="1"
+            android:src="@drawable/pdf"/>
+    </LinearLayout>
 </RelativeLayout>
