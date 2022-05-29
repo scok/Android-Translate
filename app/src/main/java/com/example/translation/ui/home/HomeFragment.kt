@@ -3,24 +3,18 @@ package com.example.translation.ui.home
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.AssetManager
-import android.graphics.Bitmap
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.ParcelFileDescriptor
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleObserver
 import com.developer.filepicker.model.DialogConfigs
 import com.developer.filepicker.model.DialogProperties
 import com.developer.filepicker.view.FilePickerDialog
-import com.example.translation.MainActivity
 import com.example.translation.databinding.FragmentHomeBinding
-import com.shockwave.pdfium.PdfiumCore
 import kotlinx.android.synthetic.main.fragment_home.*
 import java.io.File
 
@@ -91,7 +85,6 @@ class HomeFragment : Fragment(), LifecycleObserver{
                     file_dirs = file_dir.substring(0,index+1)
                 }
 
-                /*
                 customProgressDialog.show()
                 if(extensions == "docx"){
                     val intent = Intent(requireContext(),DocsActivity::class.java)
@@ -107,33 +100,7 @@ class HomeFragment : Fragment(), LifecycleObserver{
                     startActivity(intent)
                     customProgressDialog.dismiss();
                 }
-
-                 */
-
-                /*
-                val intent = Intent(requireContext(),TImageActivity::class.java)
-                intent.putExtra("file_dir",file_dirs)
-                intent.putExtra("file_name",file_name)
-                intent.putExtra("file_names",file_names)
-                startActivity(intent)
-
-                 */
-
-                /*
-
-                val inputPdf = File(tmp)
-                val outputHTML : File = pdf2htmlEX((activity as MainActivity).applicationContext).setInputPDF(inputPdf).convert()
-                Toast.makeText(requireContext(),"$outputHTML",Toast.LENGTH_SHORT).show()
-
-                val intent = Intent(requireContext(),PdfActivity::class.java)
-                intent.putExtra("PdfFile",tmp)
-                intent.putExtra("File",outputHTML.toString())
-                startActivity(intent)
-
-                 */
-
             }
-
             dialog.show()
         }
 
@@ -175,8 +142,6 @@ class HomeFragment : Fragment(), LifecycleObserver{
                     index = file_dir.lastIndexOf("/")
                     file_dirs2 = file_dir.substring(0,index+1)
                 }
-
-                Log.d("File-Test","$file_dirs")
 
                 val intent = Intent(requireContext(),DocsActivity::class.java)
                 intent.putExtra("pdf_dir",file_dirs)

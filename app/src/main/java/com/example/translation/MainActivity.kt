@@ -1,13 +1,11 @@
 package com.example.translation
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.StrictMode
-import android.util.Log
 import android.view.*
 import android.webkit.ValueCallback
 import android.webkit.WebView
@@ -29,7 +27,6 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.translate.Translate
 import com.google.cloud.translate.TranslateOptions
 import com.googlecode.tesseract.android.TessBaseAPI
-import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.*
 
 
@@ -90,32 +87,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        /*
-        OCRTextView = findViewById(R.id.OCRTextView)
-        OCRTextView.movementMethod = ScrollingMovementMethod()
-
-        image = BitmapFactory.decodeResource(resources,R.drawable.net3_3)
-
-        datapath = "$filesDir/tesseract/"
-
-        checkFile(File("$datapath/tessdata/"))
-
-        val lang : String = "eng"
-
-        mTess = TessBaseAPI()
-        mTess.init(datapath,lang)
-
-         */
-
         handler.post(handlerTask) // tick timer 실행 [번역기 on]
-    }
-
-    fun processImage(view : View){
-        var OCRresult: String? = null
-        mTess.setImage(image)
-        OCRresult = mTess.utF8Text
-
-        OCRTextView.text = OCRresult
     }
 
     private fun copyFiles(){

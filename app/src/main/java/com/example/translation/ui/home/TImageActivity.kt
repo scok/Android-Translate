@@ -1,16 +1,10 @@
 package com.example.translation.ui.home
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
-import android.provider.Settings
 import android.util.Base64
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -21,10 +15,10 @@ import com.chaquo.python.android.AndroidPlatform
 import com.example.translation.R
 import kotlinx.android.synthetic.main.activity_timage.*
 import java.io.*
-import java.util.*
 
 
 class TImageActivity : AppCompatActivity() {
+
     @SuppressLint("InlinedApi")
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,5 +46,32 @@ class TImageActivity : AppCompatActivity() {
         val inStream : ByteArrayInputStream = ByteArrayInputStream(bytePlainOrg)
         val bm : Bitmap = BitmapFactory.decodeStream(inStream)
         trImageView.setImageBitmap(bm)
+    }
+
+    private fun clearCache(){
+        val cacheDirFile : File = this.cacheDir
+        if(cacheDirFile.isDirectory){
+            clearSubCacheFiles(cacheDirFile)
+        }
+    }
+
+    private fun clearSubCacheFiles(cacheDirFile : File){
+        if(cacheDirFile.isFile){
+            return
+        }
+        for (cacheFile in cacheDirFile.listFiles()!!) {
+            if (cacheFile.isFile) {
+                if (cacheFile.exists()) {
+                    cacheFile.delete()
+                }
+            } else {
+                clearSubCacheFiles(cacheFile)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        clearCache()
     }
 }

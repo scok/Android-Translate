@@ -7,14 +7,12 @@ import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.webkit.*
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import com.example.translation.*
 import com.example.translation.databinding.FragmentTranslateBinding
-import kotlinx.android.synthetic.main.fragment_translate.*
 
 
 var originalLanguage: String = ""
@@ -44,14 +42,22 @@ class TranslateFragment : Fragment() {
             webSettings.javaScriptEnabled = true
             webSettings.domStorageEnabled = true
 
+            binding.webView.webChromeClient = object : WebChromeClient(){
+                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                    binding.progressHorizontal.progress = newProgress
+                }
+            }
+
             binding.webView.webViewClient = object : WebViewClient(){
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     super.onPageStarted(view, url, favicon)
+                    binding.progressHorizontal.visibility = View.VISIBLE
                 }
 
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
                     binding.urlEdit.setText(view!!.url)
+                    binding.progressHorizontal.visibility = View.INVISIBLE
                 }
 
                 override fun onLoadResource(view: WebView?, url: String?) {
@@ -115,39 +121,7 @@ class TranslateFragment : Fragment() {
 
         binding.webView.loadUrl("https://www.google.com")
 
-        binding.webBack.setOnClickListener {
-            if (binding.webView.canGoBack()) {
-                binding.webView.goBack()
-            } else {
-                (activity as MainActivity).onBackPressed()
-            }
-        }
-
-        binding.webForward.setOnClickListener {
-            if (binding.webView.canGoForward()) {
-                binding.webView.goForward()
-            }
-        }
-
-        binding.webMenu.setOnClickListener { v ->
-            val popup: PopupMenu = PopupMenu(requireContext(), v)
-            (activity as MainActivity).menuInflater.inflate(R.menu.web_option, popup.menu)
-            popup.setOnMenuItemClickListener { item ->
-                when(item.itemId){
-                    R.id.m1 -> {
-                        Toast.makeText(requireContext(),"메뉴1",Toast.LENGTH_SHORT).show()
-                    }
-                    R.id.m2 -> {
-                        Toast.makeText(requireContext(),"메뉴2",Toast.LENGTH_SHORT).show()
-                    }
-                    else -> {
-                        Toast.makeText(requireContext(),"에러",Toast.LENGTH_SHORT).show()
-                    }
-                }
-                false
-            }
-
-            popup.show()
+        binding.webBookmark.setOnClickListener {
 
         }
 
@@ -167,6 +141,58 @@ class TranslateFragment : Fragment() {
             return@setOnEditorActionListener false
         }
 
+        binding.webMenu.setOnClickListener { v ->
+            val context = ContextThemeWrapper(requireContext(),R.style.popup)
+            val popup: PopupMenu = PopupMenu(context, v)
+            (activity as MainActivity).menuInflater.inflate(R.menu.web_option, popup.menu)
+            popup.setOnMenuItemClickListener { item ->
+                when(item.itemId){
+                    R.id.mP -> {
+                        Toast.makeText(requireContext(),"메뉴3",Toast.LENGTH_SHORT).show()
+                    }
+                    R.id.mS -> {
+                        Toast.makeText(requireContext(),"메뉴4",Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                    }
+                }
+                false
+            }
+
+            popup.show()
+
+        }
+
+        binding.webBack.setOnClickListener {
+            if (binding.webView.canGoBack()) {
+                binding.webView.goBack()
+            } else {
+                (activity as MainActivity).onBackPressed()
+            }
+        }
+
+        binding.webForward.setOnClickListener {
+            if (binding.webView.canGoForward()) {
+                binding.webView.goForward()
+            }
+        }
+
+        binding.webRefresh.setOnClickListener {
+            binding.webView.reload()
+        }
+
+        binding.webFavorites.setOnClickListener {
+
+        }
+
+        binding.webTranslate.setOnClickListener {
+
+        }
+
+        binding.webExit.setOnClickListener {
+            (activity as MainActivity).onBackPressed()
+        }
+
         return binding.root
     }
 
@@ -175,60 +201,39 @@ class TranslateFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val items = (activity as MainActivity).resources.getStringArray(R.array.my_array)
-        val myAdapter = ArrayAdapter(
-            context as MainActivity,
-            android.R.layout.simple_spinner_dropdown_item,
-            items
-        )
+        val tempLan = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            .getString("tr_lan1","").toString()
 
-        orginalSpinner.adapter = myAdapter
-        orginalSpinner.setSelection(0)
-        orginalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                when (p2) {
-                    0 -> {
-                        originalLanguage = "en".trim()
-                    }
-                    1 -> {
-                        originalLanguage = "ko".trim()
-                    }
-                    2 -> {
-                        originalLanguage = "ja".trim()
-                    }
-                    3 -> {
-                        originalLanguage = "zh".trim()
-                    }
-                }
+        when (tempLan) {
+            "한국어" -> {
+                originalLanguage = "ko"
             }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                TODO("Not yet implemented")
+            "영어" -> {
+                originalLanguage = "en"
+            }
+            "일본어" -> {
+                originalLanguage = "ja"
+            }
+            "중국어" -> {
+                originalLanguage = "zh"
             }
         }
 
-        targetSpinner.adapter = myAdapter
-        targetSpinner.setSelection(1)
-        targetSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                when (p2) {
-                    0 -> {
-                        targetLanguage = "en".trim()
-                    }
-                    1 -> {
-                        targetLanguage = "ko".trim()
-                    }
-                    2 -> {
-                        targetLanguage = "ja".trim()
-                    }
-                    3 -> {
-                        targetLanguage = "zh-CN".trim()
-                    }
-                }
-            }
+        val tempLan2 = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            .getString("tr_lan2","").toString()
 
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                TODO("Not yet implemented")
+        when (tempLan2) {
+            "한국어" -> {
+                targetLanguage = "ko"
+            }
+            "영어" -> {
+                targetLanguage = "en"
+            }
+            "일본어" -> {
+                targetLanguage = "ja"
+            }
+            "중국어" -> {
+                targetLanguage = "zh"
             }
         }
     }

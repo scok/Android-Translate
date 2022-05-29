@@ -1,31 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/m1"
-        android:title="영어 -> 한국어" />
-    <item
-        android:id="@+id/m2"
-        android:title="영어 -> 한국어" />
-    <item
-        android:id="@+id/m3"
-        android:title="영어 -> 한국어" />
-    <item
-        android:id="@+id/m4"
-        android:title="영어 -> 한국어" />
-    <item
-        android:id="@+id/m5"
-        android:title="영어 -> 한국어" />
-    <item
-        android:id="@+id/m6"
-        android:title="영어 -> 한국어" />
-    <item
-        android:id="@+id/m7"
-        android:title="영어 -> 한국어" />
-    <item
-        android:id="@+id/m8"
-        android:title="영어 -> 한국어" />
-    <item
-        android:id="@+id/m9"
-        android:title="영어 -> 한국어" />
+    <group
+        android:id="@+id/pageTranslate">
+        <item
+            android:id="@+id/mP"
+            android:title="페이지 번역" />
+    </group>
 
+    <group
+        android:id="@+id/setting">
+        <item
+            android:id="@+id/mS"
+            android:title="번역 설정" />
+    </group>
 </menu>

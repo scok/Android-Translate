@@ -1,36 +1,24 @@
 package com.example.translation.ui.home
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.ContentUris
 import android.content.Context
-import android.content.Intent
-import android.database.Cursor
 import android.graphics.*
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
-import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
-import android.view.View
-import android.view.WindowManager
 import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
-import com.example.translation.MainActivity
 import com.example.translation.R
+import com.github.barteksc.pdfviewer.util.FitPolicy
 import com.shockwave.pdfium.PdfDocument
 import com.shockwave.pdfium.PdfiumCore
 import kotlinx.android.synthetic.main.activity_docs.*
-import kotlinx.android.synthetic.main.fragment_translate.*
 import java.io.*
 
 
@@ -52,7 +40,6 @@ class DocsActivity : AppCompatActivity() {
         val pdf_name = intent2.getStringExtra("pdf_name")
         val pdf_names = intent2.getStringExtra("pdf_names")
 
-        /*
         // PDF -> Bitmap
         val images: List<Bitmap>? = renderToBitmap(applicationContext,pdf_dir)
         // Bitmap -> File
@@ -94,10 +81,8 @@ class DocsActivity : AppCompatActivity() {
             document.finishPage(page)
         }
 
-         */
 
         val savePath = "$cacheDir/$pdf_names-translate.pdf"
-        /*
         val filePath = File(savePath)
 
         try {
@@ -108,49 +93,23 @@ class DocsActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
-         */
-
-        pdfWebView.apply {
-            webSettings = pdfWebView.settings
-            webSettings.javaScriptEnabled = true
-            webSettings.domStorageEnabled = true
-
-            pdfWebView.webViewClient = WebViewClient()
-
-            if(Build.VERSION.SDK_INT >= 19){
-                pdfWebView.setLayerType(View.LAYER_TYPE_HARDWARE,null)
-            }else{
-                pdfWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE,null)
-            }
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
-            )
-
-            webSettings.setSupportMultipleWindows(true)
-            webSettings.javaScriptCanOpenWindowsAutomatically = true
-            webSettings.loadWithOverviewMode = true
-            webSettings.useWideViewPort = true
-            webSettings.setSupportZoom(false)
-            webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
-            webSettings.domStorageEnabled = true
-            webSettings.safeBrowsingEnabled = true
-            webSettings.mediaPlaybackRequiresUserGesture = false
-            webSettings.allowContentAccess = true
-            webSettings.setGeolocationEnabled(true)
-            webSettings.allowUniversalAccessFromFileURLs = true
-            webSettings.allowFileAccess = true
-            webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH)
-            webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
-            webSettings.setEnableSmoothTransition(true)
-
-            fitsSystemWindows = true
-
-        }
-
-        pdfWebView.loadUrl("file:///data/user/0/com.example.translation/cache/[Part 1] Engineering in Software v1.0-translate.pdf")
-
-        //
+        pdfView.fromFile(File("$cacheDir/$pdf_names-translate.pdf"))
+            .enableSwipe(true) // allows to block changing pages using swipe
+            .swipeHorizontal(false)
+            .enableDoubletap(true)
+            .defaultPage(0)
+            .enableAnnotationRendering(false) // render annotations (such as comments, colors or forms)
+            .password(null)
+            .scrollHandle(null)
+            .enableAntialiasing(true) // improve rendering a little bit on low-res screens
+            .spacing(0)
+            .autoSpacing(false) // add dynamic spacing to fit each page on its own on the screen
+            .pageFitPolicy(FitPolicy.WIDTH) // mode to fit pages in the view
+            .fitEachPage(true) // fit each page to the view, else smaller pages are scaled relative to largest page.
+            .pageSnap(false) // snap pages to screen boundaries
+            .pageFling(false) // make a fling change only a single page like ViewPager
+            .nightMode(false) // toggle night mode
+            .load();
     }
 
     fun renderToBitmap(context: Context?, filePath: String?): List<Bitmap>? {
@@ -207,5 +166,30 @@ class DocsActivity : AppCompatActivity() {
         }
     }
 
+    private fun clearCache(){
+        val cacheDirFile : File = this.cacheDir
+        if(cacheDirFile.isDirectory){
+            clearSubCacheFiles(cacheDirFile)
+        }
+    }
 
+    private fun clearSubCacheFiles(cacheDirFile : File){
+        if(cacheDirFile.isFile){
+            return
+        }
+        for (cacheFile in cacheDirFile.listFiles()!!) {
+            if (cacheFile.isFile) {
+                if (cacheFile.exists()) {
+                    cacheFile.delete()
+                }
+            } else {
+                clearSubCacheFiles(cacheFile)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        clearCache()
+    }
 }

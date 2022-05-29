@@ -9,7 +9,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/border"
         android:elevation="2dp"
         android:gravity="center"
@@ -17,6 +17,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
             android:orientation="horizontal">
             <ImageButton
                 android:id="@+id/web_bookmark"
@@ -38,53 +40,40 @@
                 android:maxLines="1"
                 android:imeOptions="actionSearch"
                 android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:layout_weight="8"
+                android:gravity="center|left"
                 android:background="@drawable/round_background"/>
 
             <ImageButton
-                android:id="@+id/web_translate"
+                android:id="@+id/web_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:background="#00ff0000"
-                android:src="@drawable/baseline_translate_black_24dp"
-                android:layout_weight="1"/>
+                android:src="@drawable/baseline_menu_black_24dp" />
         </LinearLayout>
-
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Spinner
-            android:id="@+id/orginalSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:textAlignment="center"
-            android:layout_weight="2"/>
-
-        <ImageView
-            android:id="@+id/translateLanguageImage"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/baseline_arrow_right_alt_24"
-            android:layout_weight="2"/>
-
-        <Spinner
-            android:id="@+id/targetSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:textAlignment="center"
-            android:layout_weight="2"/>
-
-    </LinearLayout>
-
-    <WebView
-        android:id="@+id/webView"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="8" />
+        android:layout_weight="1">
+
+        <WebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ProgressBar
+            android:id="@+id/progress_horizontal"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:max="100"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -126,19 +115,19 @@
             android:src="@drawable/baseline_bookmark_black_24dp" />
 
         <ImageButton
-            android:id="@+id/web_tabList"
+            android:id="@+id/web_translate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:background="#00ff0000"
-            android:src="@drawable/baseline_tab_black_24dp" />
+            android:src="@drawable/baseline_translate_black_24dp"
+            android:layout_weight="1"/>
 
         <ImageButton
-            android:id="@+id/web_menu"
+            android:id="@+id/web_exit"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:background="#00ff0000"
-            android:src="@drawable/baseline_menu_black_24dp" />
+            android:src="@drawable/baseline_close_black_24dp"
+            android:layout_weight="1"/>
     </LinearLayout>
 </LinearLayout>

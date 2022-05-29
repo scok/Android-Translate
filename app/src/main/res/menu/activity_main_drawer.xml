@@ -7,7 +7,7 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/outline_home_white_20"
+            android:icon="@drawable/baseline_description_black_24dp"
             android:title="@string/menu_home" />
         <item
             android:id="@+id/nav_gallery"

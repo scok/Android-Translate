@@ -13,7 +13,7 @@ def translate(target_Language,image_dir,file_name,efile_name):
     filenames = join(dirname(image_dirs),file_name)
 
     data = {
-        'source': 'en',
+        'source': target_Language,
         'target': 'ko',
         'image': (filenames, open(filenames, 'rb'), 'application/octet-stream', {'Content-Transfer-Encoding': 'binary'})
     }

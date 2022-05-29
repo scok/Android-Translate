@@ -12,6 +12,8 @@ import com.example.translation.pref
 class SettingFragment : PreferenceFragmentCompat() {
     lateinit var mainActivity: MainActivity
     lateinit var prefs : SharedPreferences
+    var trlanPreference : Preference? = null
+    var trlan2Preference : Preference? = null
     var borderthickPreference : Preference? = null
     var borderstylePreference : Preference? = null
     var imageTLanguage : Preference? = null
@@ -21,12 +23,22 @@ class SettingFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.setting_preference,rootKey)
 
         mainActivity = context as MainActivity
+        trlanPreference = findPreference("tr_lan1")
+        trlan2Preference = findPreference("tr_lan2")
         borderthickPreference = findPreference("border_thick")
         borderstylePreference = findPreference("border_style")
         imageTLanguage = findPreference("image_targetLanguage")
         imageExPreference = findPreference("image_extension")
 
         prefs = PreferenceManager.getDefaultSharedPreferences(mainActivity)
+
+        if(prefs.getString("tr_lan1","") != ""){
+            trlanPreference?.summary = prefs.getString("tr_lan1","영어")
+        }
+
+        if(prefs.getString("tr_lan2","") != ""){
+            trlan2Preference?.summary = prefs.getString("tr_lan2","한국어")
+        }
 
         if(prefs.getString("border_thick", "") != ""){
             borderthickPreference?.summary = prefs.getString("border_thick","1px")
@@ -47,6 +59,14 @@ class SettingFragment : PreferenceFragmentCompat() {
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, s ->
         when(s){
+            "tr_lan1" -> {
+                val summary = prefs.getString("tr_lan1","영어")
+                trlanPreference?.summary = summary
+            }
+            "tr_lan2" -> {
+                val summary = prefs.getString("tr_lan2","한국어")
+                trlan2Preference?.summary = summary
+            }
             "border_thick" -> {
                 val summary = prefs.getString("border_thick","1px")
                 borderthickPreference?.summary = summary
