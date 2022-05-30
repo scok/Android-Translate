@@ -3,6 +3,7 @@ package com.example.translation.ui.home
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
@@ -12,6 +13,8 @@ import androidx.preference.PreferenceManager
 import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.example.translation.R
 import kotlinx.android.synthetic.main.activity_timage.*
 import java.io.*
@@ -45,7 +48,10 @@ class TImageActivity : AppCompatActivity() {
         val bytePlainOrg = Base64.decode(imageStr,0)
         val inStream : ByteArrayInputStream = ByteArrayInputStream(bytePlainOrg)
         val bm : Bitmap = BitmapFactory.decodeStream(inStream)
-        trImageView.setImageBitmap(bm)
+        //trImageView.setImageBitmap(bm)
+
+        val imageView : SubsamplingScaleImageView = findViewById(R.id.trImageView)
+        imageView.setImage(ImageSource.bitmap(bm))
     }
 
     private fun clearCache(){
