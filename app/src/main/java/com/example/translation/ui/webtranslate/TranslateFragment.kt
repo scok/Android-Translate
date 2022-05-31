@@ -128,6 +128,23 @@ class TranslateFragment : Fragment() {
         binding.urlEdit.setOnEditorActionListener { textView, i, keyEvent ->
             if(i == EditorInfo.IME_ACTION_SEARCH){
                 val loadingUrl = textView.text.toString()
+                if (loadingUrl.startsWith("http://") || loadingUrl.startsWith("https://")) {
+                    binding.webView.loadUrl(loadingUrl)
+                    binding.urlEdit.setText(loadingUrl)
+                } else if (loadingUrl.contains("www"))  {
+                    binding.webView.loadUrl("http://$loadingUrl")
+                    binding.urlEdit.setText("http://$loadingUrl")
+                } else if (loadingUrl.contains(".com") )  {
+                    binding.webView.loadUrl("http://www.$loadingUrl")
+                    binding.urlEdit.setText("http://www.$loadingUrl")
+                } else {
+                    val textComponents = loadingUrl.split(" ")
+                    val searchText = textComponents.joinToString("+")
+                    binding.webView.loadUrl("https://www.google.com/search?q=$searchText")
+                    binding.urlEdit.setText("https://www.google.com/search?q=$searchText")
+                }
+                /*
+                val loadingUrl = textView.text.toString()
 
                 if(URLUtil.isNetworkUrl(loadingUrl)){
                     binding.webView.loadUrl(loadingUrl)
@@ -135,7 +152,7 @@ class TranslateFragment : Fragment() {
                 }else{
                     binding.webView.loadUrl("http://$loadingUrl")
                     binding.urlEdit.setText("http://$loadingUrl")
-                }
+                }*/
             }
 
             return@setOnEditorActionListener false
