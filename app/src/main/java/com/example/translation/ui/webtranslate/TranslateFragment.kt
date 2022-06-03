@@ -1,6 +1,8 @@
 package com.example.translation.ui.webtranslate
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
@@ -13,12 +15,20 @@ import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.example.translation.*
 import com.example.translation.databinding.FragmentTranslateBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
+import kotlinx.android.synthetic.main.fragment_translate.*
 
 
 var originalLanguage: String = ""
 var targetLanguage: String = ""
 
 class TranslateFragment : Fragment() {
+
+    private lateinit var materialAlertDialogBuilder: MaterialAlertDialogBuilder
+    private lateinit var customAlertDialogView : View
+    private lateinit var nameTextField : TextInputLayout
+    private lateinit var favor_list : ArrayList<String>
 
     private var _binding: FragmentTranslateBinding? = null
     private lateinit var webSettings: WebSettings
@@ -36,6 +46,8 @@ class TranslateFragment : Fragment() {
         (activity as MainActivity).supportActionBar?.hide()
 
         setHasOptionsMenu(true)
+
+        favor_list = ArrayList<String>()
 
         binding.webView.apply {
             webSettings = binding.webView.settings
@@ -121,8 +133,13 @@ class TranslateFragment : Fragment() {
 
         binding.webView.loadUrl("https://www.google.com")
 
-        binding.webBookmark.setOnClickListener {
 
+        materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+
+        binding.webBookmark.setOnClickListener {
+            customAlertDialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.fragment_blank,null,false)
+            launchCustomAlertDialog()
         }
 
         binding.urlEdit.setOnEditorActionListener { textView, i, keyEvent ->
@@ -182,7 +199,9 @@ class TranslateFragment : Fragment() {
         }
 
         binding.webFavorites.setOnClickListener {
-
+            val intent = Intent(requireContext(),FavoritesActivity::class.java)
+            intent.putExtra("favor_list",favor_list)
+            startActivity(intent)
         }
 
         binding.webTranslate.setOnClickListener {
@@ -242,5 +261,33 @@ class TranslateFragment : Fragment() {
         super.onDestroy()
         (activity as MainActivity).supportActionBar?.show()
         _binding = null
+    }
+
+    private fun launchCustomAlertDialog() {
+        nameTextField = customAlertDialogView.findViewById(R.id.name_text_field)
+
+        // Building the Alert dialog using materialAlertDialogBuilder instance
+        materialAlertDialogBuilder.setView(customAlertDialogView)
+            .setMessage("저장 URL : ${urlEdit.text}")
+            .setTitle("즐겨찾기에 추가")
+            .setPositiveButton("추가") { dialog, _ ->
+                val name = nameTextField.editText?.text.toString()
+
+                /**
+                 * Do as you wish with the data here --
+                 * Download/Clone the repo from my Github to see the entire implementation
+                 * using the link provided at the end of the article.
+                 */
+                favor_list.add(name)
+                dialog.dismiss()
+            }
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun displayMessage(message : String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }

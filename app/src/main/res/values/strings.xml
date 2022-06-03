@@ -34,4 +34,6 @@
     <string name="toast_pick_file_error">Unable to pick file. Check status of file manager.</string>
 
     <string name="baseUrl">http://1.242.166.32:5000</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
