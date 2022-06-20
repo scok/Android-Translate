@@ -30,7 +30,7 @@ class TranslateFragment : Fragment() {
     private lateinit var materialAlertDialogBuilder: MaterialAlertDialogBuilder
     private lateinit var customAlertDialogView : View
     private lateinit var nameTextField : TextInputLayout
-    private lateinit var favor_list : ArrayList<String>
+    private lateinit var favor_list : HashMap<String, String>
 
     private var _binding: FragmentTranslateBinding? = null
     private lateinit var webSettings: WebSettings
@@ -49,7 +49,7 @@ class TranslateFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        favor_list = ArrayList<String>()
+        favor_list = HashMap<String, String>()
 
         binding.webView.apply {
             webSettings = binding.webView.settings
@@ -72,6 +72,14 @@ class TranslateFragment : Fragment() {
                     super.onPageFinished(view, url)
                     binding.urlEdit.setText(view!!.url)
                     binding.progressHorizontal.visibility = View.INVISIBLE
+
+                    if(favor_list.containsKey(view!!.url)){ // 북마크에이미 해당 url이 존재하면 칠해진 별
+                        binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp)
+                        //web_bookmark.setImageResource(R.drawable.baseline_star_black_24dp)
+                    }
+                    else{
+                        binding.webBookmark.setImageResource(R.drawable.baseline_star_border_black_24dp) // 빈별
+                    }
                 }
 
                 override fun onLoadResource(view: WebView?, url: String?) {
@@ -140,7 +148,7 @@ class TranslateFragment : Fragment() {
 
         binding.webBookmark.setOnClickListener {
 
-            if(favor_list.contains(binding.urlEdit.text.toString())){ // 북마크에이미 해당 url이 존재하면 북마크삭제
+            if(favor_list.containsKey(binding.urlEdit.text.toString())){ // 북마크에이미 해당 url이 존재하면 북마크삭제
                 binding.webBookmark.setImageResource(R.drawable.baseline_star_border_black_24dp) // 빈별
             }
             else{ // 신규 Url 이면 북마크 추가 후 별 색칠
@@ -169,13 +177,7 @@ class TranslateFragment : Fragment() {
                     binding.webView.loadUrl("https://www.google.com/search?q=$searchText")
                     binding.urlEdit.setText("https://www.google.com/search?q=$searchText")
                 }
-                if(favor_list.contains(textView.text.toString())){ // 북마크에이미 해당 url이 존재하면 칠해진 별
-                    binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp)
-                    //web_bookmark.setImageResource(R.drawable.baseline_star_black_24dp)
-                }
-                else{
-                    binding.webBookmark.setImageResource(R.drawable.baseline_star_border_black_24dp) // 빈별
-                }
+
                 /*
                 val loadingUrl = textView.text.toString()
 
@@ -318,7 +320,7 @@ class TranslateFragment : Fragment() {
                  * Download/Clone the repo from my Github to see the entire implementation
                  * using the link provided at the end of the article.
                  */
-                favor_list.add(name)
+                favor_list[urlEdit.text.toString()] = name
                 binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp) // 별추가
                 dialog.dismiss()
             }

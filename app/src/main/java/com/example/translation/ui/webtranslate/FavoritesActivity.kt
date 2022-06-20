@@ -13,7 +13,8 @@ class FavoritesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_favorites)
 
         val intent = intent
-        val items : ArrayList<String> = intent.getSerializableExtra("favor_list") as ArrayList<String>
+        val faver : HashMap<String, String>  = intent.getSerializableExtra("favor_list") as HashMap<String, String>
+        val items : ArrayList<String> = ArrayList(faver.values)
         val adapter = ArrayAdapter(this,android.R.layout.simple_list_item_single_choice,items)
         favorites_list.adapter = adapter
         adapter.notifyDataSetChanged()
