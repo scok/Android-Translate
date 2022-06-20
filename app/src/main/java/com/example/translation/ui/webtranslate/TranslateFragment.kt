@@ -17,7 +17,9 @@ import com.example.translation.*
 import com.example.translation.databinding.FragmentTranslateBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.android.synthetic.main.activity_favorites.view.*
 import kotlinx.android.synthetic.main.fragment_translate.*
+import kotlinx.android.synthetic.main.fragment_translate.view.*
 
 
 var originalLanguage: String = ""
@@ -137,9 +139,16 @@ class TranslateFragment : Fragment() {
         materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
 
         binding.webBookmark.setOnClickListener {
-            customAlertDialogView = LayoutInflater.from(requireContext())
-                .inflate(R.layout.fragment_blank,null,false)
-            launchCustomAlertDialog()
+
+            if(favor_list.contains(binding.urlEdit.text.toString())){ // 북마크에이미 해당 url이 존재하면 북마크삭제
+                binding.webBookmark.setImageResource(R.drawable.baseline_star_border_black_24dp) // 빈별
+            }
+            else{ // 신규 Url 이면 북마크 추가 후 별 색칠
+                customAlertDialogView = LayoutInflater.from(requireContext())
+                    .inflate(R.layout.fragment_blank,null,false)
+                launchCustomAlertDialog()
+            }
+
         }
 
         binding.urlEdit.setOnEditorActionListener { textView, i, keyEvent ->
@@ -159,6 +168,13 @@ class TranslateFragment : Fragment() {
                     val searchText = textComponents.joinToString("+")
                     binding.webView.loadUrl("https://www.google.com/search?q=$searchText")
                     binding.urlEdit.setText("https://www.google.com/search?q=$searchText")
+                }
+                if(favor_list.contains(textView.text.toString())){ // 북마크에이미 해당 url이 존재하면 칠해진 별
+                    binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp)
+                    //web_bookmark.setImageResource(R.drawable.baseline_star_black_24dp)
+                }
+                else{
+                    binding.webBookmark.setImageResource(R.drawable.baseline_star_border_black_24dp) // 빈별
                 }
                 /*
                 val loadingUrl = textView.text.toString()
@@ -282,20 +298,28 @@ class TranslateFragment : Fragment() {
 
     private fun launchCustomAlertDialog() {
         nameTextField = customAlertDialogView.findViewById(R.id.name_text_field)
-
+        binding.webView.evaluateJavascript(
+            "javascript:(function getTitle(){\n" +
+                    "   var tagTitle = document.getElementsByTagName('title');\n" +
+                    "   var textString = tagTitle[0].textContent; \n" +
+                    "   return textString;\n" +
+                    "})()"
+        ){ value ->
+            nameTextField.editText?.setText(value?.substring(1, value.toString().length-1) ?: " ")
+        }
         // Building the Alert dialog using materialAlertDialogBuilder instance
         materialAlertDialogBuilder.setView(customAlertDialogView)
             .setMessage("저장 URL : ${urlEdit.text}")
             .setTitle("즐겨찾기에 추가")
             .setPositiveButton("추가") { dialog, _ ->
                 val name = nameTextField.editText?.text.toString()
-
                 /**
                  * Do as you wish with the data here --
                  * Download/Clone the repo from my Github to see the entire implementation
                  * using the link provided at the end of the article.
                  */
                 favor_list.add(name)
+                binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp) // 별추가
                 dialog.dismiss()
             }
             .setNegativeButton("취소") { dialog, _ ->
