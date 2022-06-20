@@ -1,7 +1,6 @@
 package com.example.translation.ui.webtranslate
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
@@ -20,6 +19,10 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_favorites.view.*
 import kotlinx.android.synthetic.main.fragment_translate.*
 import kotlinx.android.synthetic.main.fragment_translate.view.*
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.util.*
 
 
 var originalLanguage: String = ""
@@ -73,6 +76,7 @@ class TranslateFragment : Fragment() {
                     binding.urlEdit.setText(view!!.url)
                     binding.progressHorizontal.visibility = View.INVISIBLE
 
+                    loadBookmark()
                     if(favor_list.containsKey(view!!.url)){ // 북마크에이미 해당 url이 존재하면 칠해진 별
                         binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp)
                         //web_bookmark.setImageResource(R.drawable.baseline_star_black_24dp)
@@ -150,6 +154,9 @@ class TranslateFragment : Fragment() {
 
             if(favor_list.containsKey(binding.urlEdit.text.toString())){ // 북마크에이미 해당 url이 존재하면 북마크삭제
                 binding.webBookmark.setImageResource(R.drawable.baseline_star_border_black_24dp) // 빈별
+                favor_list.remove(binding.urlEdit.text.toString())
+                saveBookmark()
+
             }
             else{ // 신규 Url 이면 북마크 추가 후 별 색칠
                 customAlertDialogView = LayoutInflater.from(requireContext())
@@ -322,6 +329,7 @@ class TranslateFragment : Fragment() {
                  */
                 favor_list[urlEdit.text.toString()] = name
                 binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp) // 별추가
+                saveBookmark()
                 dialog.dismiss()
             }
             .setNegativeButton("취소") { dialog, _ ->
@@ -332,5 +340,29 @@ class TranslateFragment : Fragment() {
 
     private fun displayMessage(message : String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveBookmark(){
+        val properties = Properties()
+        try{
+            for((key,value)  in favor_list){
+                properties[key] = value
+            }
+            properties.store(FileOutputStream("BookMark.properties") , null)
+        }catch(e: IOException){
+            properties.store(FileOutputStream("BookMark.properties") , null)
+        }
+
+    }
+    private fun loadBookmark(){
+        val properties = Properties()
+        try {
+            properties.load(FileInputStream("BookMark.properties"))
+            for (key in properties.stringPropertyNames()) {
+                favor_list[key] = properties[key].toString()
+            }
+        } catch (e: IOException) {
+            saveBookmark()
+        }
     }
 }
