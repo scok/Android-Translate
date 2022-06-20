@@ -17,6 +17,7 @@
 ## 1.3. 사용 안내
 ### 1.3.1. 웹 뷰 실시간 번역
 ![웹뷰](https://user-images.githubusercontent.com/95574210/174531141-8ca75841-71d5-4015-92e8-2e58569ee610.PNG)
+
 출처 : https://edition.cnn.com/2022/06/19/europe/ukraine-russia-war-stoltenberg-johnson-intl-gbr/index.html
 
 ### 1.3.2. 이미지 번역
