@@ -12,20 +12,23 @@
     1. 웹 뷰 실시간 번역
     2. 문서 번역
     3. PDF 번역
+    
+## 1.3. 사용한 툴
+![툴](https://user-images.githubusercontent.com/95574210/174532562-1412aeda-b672-493f-86b1-b6234ca7b196.png)
 
-## 1.3. 사용 안내
-### 1.3.1. 웹 뷰 실시간 번역
+## 1.4. 사용 안내
+### 1.4.1. 웹 뷰 실시간 번역
 ![웹뷰](https://user-images.githubusercontent.com/95574210/174531141-8ca75841-71d5-4015-92e8-2e58569ee610.PNG)
 
 출처 : https://edition.cnn.com/2022/06/19/europe/ukraine-russia-war-stoltenberg-johnson-intl-gbr/index.html
 
-### 1.3.2. 이미지 번역
+### 1.4.2. 이미지 번역
 
 <p>
     
 </p>
 
-### 1.3.3. PDF 번역
+### 1.4.3. PDF 번역
 
 <p>
     
