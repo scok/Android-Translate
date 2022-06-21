@@ -62,7 +62,7 @@ class TranslateFragment : Fragment() {
                     binding.progressHorizontal.progress = newProgress
                 }
             }
-
+            favorList= loadBookmark() as LinkedHashMap<String, String>
             binding.webView.webViewClient = object : WebViewClient(){
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     super.onPageStarted(view, url, favicon)
@@ -81,8 +81,6 @@ class TranslateFragment : Fragment() {
                     super.onPageFinished(view, url)
                     binding.urlEdit.setText(view!!.url)
                     binding.progressHorizontal.visibility = View.INVISIBLE
-
-                    favorList= loadBookmark() as LinkedHashMap<String, String>
 
                     if(favorList.containsKey(view!!.url)){ // 북마크에이미 해당 url이 존재하면 칠해진 별
                         binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp)
