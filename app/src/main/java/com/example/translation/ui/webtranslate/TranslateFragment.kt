@@ -1,6 +1,8 @@
 package com.example.translation.ui.webtranslate
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
@@ -12,18 +14,14 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
-import com.example.translation.*
+import com.example.translation.MainActivity
+import com.example.translation.R
 import com.example.translation.databinding.FragmentTranslateBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.activity_favorites.view.*
 import kotlinx.android.synthetic.main.fragment_translate.*
-import kotlinx.android.synthetic.main.fragment_translate.view.*
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
+import org.json.JSONObject
 import java.util.*
-
 
 var originalLanguage: String = ""
 var targetLanguage: String = ""
@@ -33,7 +31,7 @@ class TranslateFragment : Fragment() {
     private lateinit var materialAlertDialogBuilder: MaterialAlertDialogBuilder
     private lateinit var customAlertDialogView : View
     private lateinit var nameTextField : TextInputLayout
-    private lateinit var favor_list : HashMap<String, String>
+    private lateinit var favorList : LinkedHashMap<String, String>
 
     private var _binding: FragmentTranslateBinding? = null
     private lateinit var webSettings: WebSettings
@@ -52,7 +50,7 @@ class TranslateFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        favor_list = HashMap<String, String>()
+        favorList = LinkedHashMap<String, String>()
 
         binding.webView.apply {
             webSettings = binding.webView.settings
@@ -64,11 +62,19 @@ class TranslateFragment : Fragment() {
                     binding.progressHorizontal.progress = newProgress
                 }
             }
-
+            favorList= loadBookmark() as LinkedHashMap<String, String>
             binding.webView.webViewClient = object : WebViewClient(){
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     super.onPageStarted(view, url, favicon)
                     binding.progressHorizontal.visibility = View.VISIBLE
+
+                    if(favorList.containsKey(view!!.url)){ // 북마크에이미 해당 url이 존재하면 칠해진 별
+                        binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp)
+                        //web_bookmark.setImageResource(R.drawable.baseline_star_black_24dp)
+                    }
+                    else{
+                        binding.webBookmark.setImageResource(R.drawable.baseline_star_border_black_24dp) // 빈별
+                    }
                 }
 
                 override fun onPageFinished(view: WebView?, url: String?) {
@@ -76,8 +82,7 @@ class TranslateFragment : Fragment() {
                     binding.urlEdit.setText(view!!.url)
                     binding.progressHorizontal.visibility = View.INVISIBLE
 
-                    loadBookmark()
-                    if(favor_list.containsKey(view!!.url)){ // 북마크에이미 해당 url이 존재하면 칠해진 별
+                    if(favorList.containsKey(view!!.url)){ // 북마크에이미 해당 url이 존재하면 칠해진 별
                         binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp)
                         //web_bookmark.setImageResource(R.drawable.baseline_star_black_24dp)
                     }
@@ -152,10 +157,10 @@ class TranslateFragment : Fragment() {
 
         binding.webBookmark.setOnClickListener {
 
-            if(favor_list.containsKey(binding.urlEdit.text.toString())){ // 북마크에이미 해당 url이 존재하면 북마크삭제
+            if(favorList.containsKey(binding.urlEdit.text.toString())){ // 북마크에이미 해당 url이 존재하면 북마크삭제
                 binding.webBookmark.setImageResource(R.drawable.baseline_star_border_black_24dp) // 빈별
-                favor_list.remove(binding.urlEdit.text.toString())
-                saveBookmark()
+                favorList.remove(binding.urlEdit.text.toString())
+                saveBookmark(favorList)
 
             }
             else{ // 신규 Url 이면 북마크 추가 후 별 색칠
@@ -242,10 +247,13 @@ class TranslateFragment : Fragment() {
 
         binding.webFavorites.setOnClickListener {
             val intent = Intent(requireContext(),FavoritesActivity::class.java)
-            intent.putExtra("favor_list",favor_list)
-            startActivity(intent)
+            val items : ArrayList<String> = ArrayList(favorList.values)
+            intent.putExtra("favor_list", items)
+            //intent.putExtra("favor_list", favorList) as LinkedHashMap<String, String>
+            //intent.putExtra("favor_list", favorList)
+           // startActivity(intent)
+            startActivityForResult(intent,REQUEST_RESULT)
         }
-
         binding.webTranslate.setOnClickListener {
 
         }
@@ -256,6 +264,7 @@ class TranslateFragment : Fragment() {
 
         return binding.root
     }
+
 
     @Deprecated("Deprecated in Java")
     @SuppressLint("SetJavaScriptEnabled")
@@ -327,9 +336,9 @@ class TranslateFragment : Fragment() {
                  * Download/Clone the repo from my Github to see the entire implementation
                  * using the link provided at the end of the article.
                  */
-                favor_list[urlEdit.text.toString()] = name
+                favorList[urlEdit.text.toString()] = name
                 binding.webBookmark.setImageResource(R.drawable.baseline_star_black_24dp) // 별추가
-                saveBookmark()
+                saveBookmark(favorList)
                 dialog.dismiss()
             }
             .setNegativeButton("취소") { dialog, _ ->
@@ -342,27 +351,59 @@ class TranslateFragment : Fragment() {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun saveBookmark(){
-        val properties = Properties()
-        try{
-            for((key,value)  in favor_list){
-                properties[key] = value
-            }
-            properties.store(FileOutputStream("BookMark.properties") , null)
-        }catch(e: IOException){
-            properties.store(FileOutputStream("BookMark.properties") , null)
-        }
-
+    private fun saveBookmark(inputMap: LinkedHashMap<String, String>){
+        val sharedPreferences = (activity as MainActivity).applicationContext.getSharedPreferences(
+            "BookMark_sharedPreferences", Context.MODE_PRIVATE
+        )
+        val jsonObject = JSONObject(inputMap as LinkedHashMap<*,*>)
+        val jsonString = jsonObject.toString()
+        val editor = sharedPreferences.edit()
+        editor.remove("map").commit()
+        editor.putString("map", jsonString)
+        editor.commit()
     }
-    private fun loadBookmark(){
-        val properties = Properties()
+
+
+    private fun loadBookmark():LinkedHashMap<String,String>{
+        val outputMap = LinkedHashMap<String,String>()
+        val pSharedPref = (activity as MainActivity).applicationContext.getSharedPreferences(
+            "BookMark_sharedPreferences", Context.MODE_PRIVATE)
+
         try {
-            properties.load(FileInputStream("BookMark.properties"))
-            for (key in properties.stringPropertyNames()) {
-                favor_list[key] = properties[key].toString()
+            if (pSharedPref != null) {
+                val jsonString = pSharedPref.getString("map", JSONObject().toString())
+                val jsonObject = JSONObject(jsonString)
+                val keysItr = jsonObject.keys()
+                while (keysItr.hasNext()) {
+                    val key = keysItr.next()
+                    val value = jsonObject[key] as String
+                    outputMap[key] = value
+                }
             }
-        } catch (e: IOException) {
-            saveBookmark()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return outputMap as LinkedHashMap<String, String>
+    }
+    companion object {
+        private const val REQUEST_RESULT = 1
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // If you have multiple activities returning results then you should include unique request codes for each
+        if (requestCode == REQUEST_RESULT) {
+            // The result code from the activity started using startActivityForResults
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                val favorIndex = data.getIntExtra("favor_index",9999)
+                val favorURL = ArrayList(favorList.keys)[favorIndex]
+                binding.webView.loadUrl(favorURL)
+                binding.urlEdit.setText(favorURL)
+                //val value: String = ArrayList<String>(favorList.values)[favorIndex]
+                //Toast.makeText(activity as MainActivity,favorURL.toString(),Toast.LENGTH_LONG).show()
+            }
+            else{
+                //fail
+            }
         }
     }
 }
