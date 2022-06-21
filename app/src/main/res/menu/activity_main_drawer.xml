@@ -13,10 +13,6 @@
             android:id="@+id/nav_gallery"
             android:icon="@drawable/language"
             android:title="@string/menu_wt" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/baseline_book_white_20"
-            android:title="@string/menu_dic" />
     </group>
 
     <item android:title="설정">
