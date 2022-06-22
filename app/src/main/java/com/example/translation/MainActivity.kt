@@ -1,6 +1,8 @@
 package com.example.translation
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -27,6 +29,7 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.translate.Translate
 import com.google.cloud.translate.TranslateOptions
 import com.googlecode.tesseract.android.TessBaseAPI
+import org.json.JSONObject
 import java.io.*
 
 
@@ -242,86 +245,7 @@ class MainActivity : AppCompatActivity() {
             return@setOnMenuItemClickListener true
         }
         mode.menu.getItem(1).setOnMenuItemClickListener {
-            if (fullTranslateMode){
-                fullTranslateMode = false
-                translateOn = false
-
-                Toast.makeText(applicationContext , "번역 OFF" , Toast.LENGTH_SHORT).show()
-            }
-            else {
-                fullTranslateMode = true
-                translateOn = true
-
-                cusWebView2.evaluateJavascript(
-                    "javascript:(function getPTagText(){\n" +
-                            "   return window.innerHeight;\n" +
-                            "})()"
-                ){value ->  innerWindowHeight = value.toInt()
-                    //Toast.makeText(applicationContext , innerWindowHeight.toString() , Toast.LENGTH_SHORT).show()
-                }
-
-                Toast.makeText(applicationContext , "번역 ON" , Toast.LENGTH_SHORT).show()
-                cusWebView2.evaluateJavascript(
-                    "javascript:(function getPTagText55(){\n" +
-                            "   var tagP = document.getElementsByTagName('p');\n" +
-                            "   return tagP.length;\n" +
-                            "})()"
-                ){ value ->
-                    maxTagPIndex = value.toInt()
-                    tagPIndex = 0
-                    //oldTagPIndex = 0
-                    originScrollY = 0
-                }
-                cusWebView2.evaluateJavascript(
-                    "javascript:(function getPTagText55(){\n" +
-                            "   var tagP = document.getElementsByTagName('Strong');\n" +
-                            "   return tagP.length;\n" +
-                            "})()"
-                ){ value ->
-                    maxTagStrongIndex = value.toInt()
-                    tagStrongIndex = 0
-
-                }
-                cusWebView2.evaluateJavascript(
-                    "javascript:(function getPTagText55(){\n" +
-                            "   var tagP = document.getElementsByTagName('a');\n" +
-                            "   return tagP.length;\n" +
-                            "})()"
-                ){ value ->
-                    maxTagAIndex = value.toInt()
-                    tagAIndex = 0
-
-                }
-                cusWebView2.evaluateJavascript(
-                    "javascript:(function getPTagText55(){\n" +
-                            "   var tagP = document.getElementsByTagName('li');\n" +
-                            "   return tagP.length;\n" +
-                            "})()"
-                ){ value ->
-                    maxTagLiIndex = value.toInt()
-                    tagLiIndex = 0
-                }
-            }
-
-            /*
-        cusWebView2.evaluateJavascript(
-            "javascript:(function getPTagText(){\n" +
-                    "   var tagP = document.getElementsByTagName('p');\n" +
-                    "   var cord = tagP[1].textContent\n" +
-                    "   return cord;\n" +
-                    "})()"
-        ){value ->
-            Toast.makeText(applicationContext , "$value" , Toast.LENGTH_SHORT).show()
-        } */
-            /*
-            cusWebView2.evaluateJavascript(
-                "javascript:(function getPTagText(){\n" +
-                        "   var tagP = document.getElementsByTagName('p');\n" +
-                        "   return tagP;\n" +
-                        "})()",
-            ){value ->
-                tagP = value
-            }*/
+            translateToggle()
             return@setOnMenuItemClickListener true
         }
     }
@@ -366,8 +290,8 @@ class MainActivity : AppCompatActivity() {
                                             "})()"
                                 ) { value ->
                                     val str = value.substring(1 , value.toString().length - 1)
-                                    //val translateTask = ApiTranslateNmt(str).execute().get()
-                                    val translateTask = str
+                                    val translateTask = ApiTranslateNmt(str).execute().get()
+                                    //val translateTask = str
                                     //Toast.makeText(applicationContext , "$value" , Toast.LENGTH_SHORT).show()
                                     // val inputText = "<div>$translateTask</div>"
                                     //Toast.makeText(applicationContext , tagPIndex.toString() , Toast.LENGTH_SHORT).show()
@@ -469,8 +393,8 @@ class MainActivity : AppCompatActivity() {
                                             "})()"
                                 ){ value ->
                                     val str = value.substring(1, value.toString().length-1)
-                                    //val translateTask = ApiTranslateNmt(str).execute().get()
-                                    val translateTask = str
+                                    val translateTask = ApiTranslateNmt(str).execute().get()
+                                    //val translateTask = str
                                     cusWebView2.evaluateJavascript(
                                         "javascript:(function translateText2(){\n" +
                                                 "   var tagP = document.getElementsByTagName('strong');\n" +
@@ -508,8 +432,8 @@ class MainActivity : AppCompatActivity() {
                                 ){ value ->
                                     //Toast.makeText(applicationContext , "$value" , Toast.LENGTH_SHORT).show()
                                     val str = value.substring(1, value.toString().length-1)
-                                    //val translateTask = ApiTranslateNmt(str).execute().get()
-                                    val translateTask = str
+                                    val translateTask = ApiTranslateNmt(str).execute().get()
+                                    //val translateTask = str
                                     cusWebView2.evaluateJavascript(
                                         "javascript:(function translateText(){\n" +
                                                 "   var tagP = document.getElementsByTagName('li');\n" +
@@ -546,4 +470,92 @@ class MainActivity : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
+
+    fun translateToggle() {
+        var cusWebView2 = findViewById<WebView>(R.id.webView)
+        if (fullTranslateMode){
+            fullTranslateMode = false
+            translateOn = false
+
+            Toast.makeText(applicationContext , "번역 OFF" , Toast.LENGTH_SHORT).show()
+        }
+        else {
+            fullTranslateMode = true
+            translateOn = true
+
+            cusWebView2.evaluateJavascript(
+                "javascript:(function getPTagText(){\n" +
+                        "   return window.innerHeight;\n" +
+                        "})()"
+            ){value ->  innerWindowHeight = value.toInt()
+                //Toast.makeText(applicationContext , innerWindowHeight.toString() , Toast.LENGTH_SHORT).show()
+            }
+
+            Toast.makeText(applicationContext , "번역 ON" , Toast.LENGTH_SHORT).show()
+            cusWebView2.evaluateJavascript(
+                "javascript:(function getPTagText55(){\n" +
+                        "   var tagP = document.getElementsByTagName('p');\n" +
+                        "   return tagP.length;\n" +
+                        "})()"
+            ){ value ->
+                maxTagPIndex = value.toInt()
+                tagPIndex = 0
+                //oldTagPIndex = 0
+                originScrollY = 0
+            }
+            cusWebView2.evaluateJavascript(
+                "javascript:(function getPTagText55(){\n" +
+                        "   var tagP = document.getElementsByTagName('Strong');\n" +
+                        "   return tagP.length;\n" +
+                        "})()"
+            ){ value ->
+                maxTagStrongIndex = value.toInt()
+                tagStrongIndex = 0
+
+            }
+            cusWebView2.evaluateJavascript(
+                "javascript:(function getPTagText55(){\n" +
+                        "   var tagP = document.getElementsByTagName('a');\n" +
+                        "   return tagP.length;\n" +
+                        "})()"
+            ){ value ->
+                maxTagAIndex = value.toInt()
+                tagAIndex = 0
+
+            }
+            cusWebView2.evaluateJavascript(
+                "javascript:(function getPTagText55(){\n" +
+                        "   var tagP = document.getElementsByTagName('li');\n" +
+                        "   return tagP.length;\n" +
+                        "})()"
+            ){ value ->
+                maxTagLiIndex = value.toInt()
+                tagLiIndex = 0
+            }
+        }
+
+        /*
+    cusWebView2.evaluateJavascript(
+        "javascript:(function getPTagText(){\n" +
+                "   var tagP = document.getElementsByTagName('p');\n" +
+                "   var cord = tagP[1].textContent\n" +
+                "   return cord;\n" +
+                "})()"
+    ){value ->
+        Toast.makeText(applicationContext , "$value" , Toast.LENGTH_SHORT).show()
+    } */
+        /*
+        cusWebView2.evaluateJavascript(
+            "javascript:(function getPTagText(){\n" +
+                    "   var tagP = document.getElementsByTagName('p');\n" +
+                    "   return tagP;\n" +
+                    "})()",
+        ){value ->
+            tagP = value
+        }*/
+    }
+    fun checkTranslate(): Boolean {
+        return fullTranslateMode
+    }
+
 }

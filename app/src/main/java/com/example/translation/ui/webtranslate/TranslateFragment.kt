@@ -75,6 +75,7 @@ class TranslateFragment : Fragment() {
                     else{
                         binding.webBookmark.setImageResource(R.drawable.baseline_star_border_black_24dp) // 빈별
                     }
+                    if ((activity as MainActivity).checkTranslate()){(activity as MainActivity).translateToggle()}
                 }
 
                 override fun onPageFinished(view: WebView?, url: String?) {
@@ -255,7 +256,7 @@ class TranslateFragment : Fragment() {
             startActivityForResult(intent,REQUEST_RESULT)
         }
         binding.webTranslate.setOnClickListener {
-
+            (activity as MainActivity).translateToggle()
         }
 
         binding.webExit.setOnClickListener {
