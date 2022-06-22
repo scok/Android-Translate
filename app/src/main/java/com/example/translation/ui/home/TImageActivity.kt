@@ -1,11 +1,13 @@
 package com.example.translation.ui.home
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.Image
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Base64
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -28,30 +30,40 @@ class TImageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timage)
 
-        val intent = intent
+        val progressDialog : ProgressDialog = ProgressDialog(this)
+        progressDialog.setMessage("이미지 구성중...")
+        progressDialog.setCancelable(true)
+        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Horizontal)
+        progressDialog.show()
 
-        val image_dir = intent.getStringExtra("file_dirs")
-        val file_name = intent.getStringExtra("file_name")
-        val file_names = intent.getStringExtra("file_names")
+        val handler : Handler = Handler()
+        handler.postDelayed(Runnable {
+            val intent = intent
 
-        if(!Python.isStarted()){
-            Python.start(AndroidPlatform(this))
-        }
+            val image_dir = intent.getStringExtra("file_dirs")
+            val file_name = intent.getStringExtra("file_name")
+            val file_names = intent.getStringExtra("file_names")
 
-        val target_Language = PreferenceManager.getDefaultSharedPreferences(this)
-            .getString("image_targetLanguage", "").toString()
+            if(!Python.isStarted()){
+                Python.start(AndroidPlatform(this))
+            }
 
-        val py : Python = Python.getInstance()
-        val pyo : PyObject = py.getModule("test")
-        val imageStr = pyo.callAttr("translate",target_Language, image_dir,file_name,file_names).toString()
+            val target_Language = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString("image_targetLanguage", "").toString()
 
-        val bytePlainOrg = Base64.decode(imageStr,0)
-        val inStream : ByteArrayInputStream = ByteArrayInputStream(bytePlainOrg)
-        val bm : Bitmap = BitmapFactory.decodeStream(inStream)
-        //trImageView.setImageBitmap(bm)
+            val py : Python = Python.getInstance()
+            val pyo : PyObject = py.getModule("test")
+            val imageStr = pyo.callAttr("translate",target_Language, image_dir,file_name,file_names).toString()
 
-        val imageView : SubsamplingScaleImageView = findViewById(R.id.trImageView)
-        imageView.setImage(ImageSource.bitmap(bm))
+            val bytePlainOrg = Base64.decode(imageStr,0)
+            val inStream : ByteArrayInputStream = ByteArrayInputStream(bytePlainOrg)
+            val bm : Bitmap = BitmapFactory.decodeStream(inStream)
+            //trImageView.setImageBitmap(bm)
+
+            val imageView : SubsamplingScaleImageView = findViewById(R.id.trImageView)
+            imageView.setImage(ImageSource.bitmap(bm))
+            progressDialog.dismiss()
+        },1000)
     }
 
     private fun clearCache(){

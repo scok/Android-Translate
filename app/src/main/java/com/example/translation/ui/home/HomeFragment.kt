@@ -1,6 +1,7 @@
 package com.example.translation.ui.home
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.AssetManager
 import android.graphics.drawable.ColorDrawable
@@ -27,7 +28,6 @@ class HomeFragment : Fragment(), LifecycleObserver{
     lateinit var assetManager: AssetManager
     var text: String = ""
     private val binding get() = _binding!!
-    lateinit var customProgressDialog: ProgressDialog
 
     @SuppressLint("SdCardPath", "SetJavaScriptEnabled")
     override fun onCreateView(
@@ -44,10 +44,6 @@ class HomeFragment : Fragment(), LifecycleObserver{
     @SuppressLint("SetJavaScriptEnabled", "SdCardPath")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        customProgressDialog = ProgressDialog(requireContext())
-        customProgressDialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
-
 
         webBtn1.setOnClickListener {
             val properties : DialogProperties = DialogProperties()
@@ -85,20 +81,16 @@ class HomeFragment : Fragment(), LifecycleObserver{
                     file_dirs = file_dir.substring(0,index+1)
                 }
 
-                customProgressDialog.show()
                 if(extensions == "docx"){
                     val intent = Intent(requireContext(),DocsActivity::class.java)
                     startActivity(intent)
-                    customProgressDialog.dismiss();
                 }
                 else {
-                    customProgressDialog.show()
                     val intent = Intent(requireContext(),TImageActivity::class.java)
                     intent.putExtra("file_dirs",file_dirs)
                     intent.putExtra("file_name",file_name)
                     intent.putExtra("file_names",file_names)
                     startActivity(intent)
-                    customProgressDialog.dismiss();
                 }
             }
             dialog.show()
