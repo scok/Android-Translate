@@ -87,6 +87,7 @@ class HomeFragment : Fragment(), LifecycleObserver{
                 }
                 else {
                     val intent = Intent(requireContext(),TImageActivity::class.java)
+                    intent.putExtra("file_dir",file_dir)
                     intent.putExtra("file_dirs",file_dirs)
                     intent.putExtra("file_name",file_name)
                     intent.putExtra("file_names",file_names)

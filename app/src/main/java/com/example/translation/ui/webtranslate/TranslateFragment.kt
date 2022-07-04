@@ -1,27 +1,41 @@
 package com.example.translation.ui.webtranslate
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.DownloadManager
 import android.content.Context
+import android.content.Context.DOWNLOAD_SERVICE
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.text.TextUtils
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.webkit.*
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.example.translation.MainActivity
 import com.example.translation.R
 import com.example.translation.databinding.FragmentTranslateBinding
+import com.example.translation.ui.home.DocsActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.fragment_translate.*
 import org.json.JSONObject
+import java.net.URLDecoder
 import java.util.*
+
 
 var originalLanguage: String = ""
 var targetLanguage: String = ""
@@ -32,6 +46,7 @@ class TranslateFragment : Fragment() {
     private lateinit var customAlertDialogView : View
     private lateinit var nameTextField : TextInputLayout
     private lateinit var favorList : LinkedHashMap<String, String>
+    private var donwloadid : Long? = null
 
     private var _binding: FragmentTranslateBinding? = null
     private lateinit var webSettings: WebSettings
@@ -111,9 +126,73 @@ class TranslateFragment : Fragment() {
                     return super.shouldInterceptRequest(view, request)
                 }
 
-                override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                    return super.shouldOverrideUrlLoading(view, request)
+                override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                    if (url != null) {
+                        if(url.substring(url.length-4) == ".pdf"){
+                            //val intent = Intent(requireContext(),DocsActivity::class.java)
+                            //startActivity(intent)
+                            Log.d("URL-Sample",url.substring(url.length-4))
+                        }
+                    }
+                    return super.shouldOverrideUrlLoading(view, url)
                 }
+            }
+
+            binding.webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
+
+                try{
+                    var downloadManager = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+                    var _contentDisposition = URLDecoder.decode(contentDisposition,"UTF-8")
+
+                    var _mimetype = mimetype
+
+                    var fileName = _contentDisposition.replace("attachment; filename=","")
+                    if(!TextUtils.isEmpty(fileName)){
+                        _mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimetype)
+
+                        if(fileName.endsWith(";")){
+                            fileName = fileName.substring(0,fileName.length-1)
+                        }
+
+                        if(fileName.startsWith("\"") && fileName.endsWith("\"")){
+                            fileName = fileName.substring(1,fileName.length-1)
+                        }
+                    }
+
+                    var request = DownloadManager.Request(Uri.parse(url)).apply {
+                        setMimeType(_mimetype)
+                        addRequestHeader("User-Agent",userAgent)
+                        setDescription("Downloading File")
+                        setAllowedOverMetered(true)
+                        setAllowedOverRoaming(true)
+                        setTitle(fileName)
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                            setRequiresCharging(false)
+                        }
+
+                        allowScanningByMediaScanner()
+                        setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                        setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory().path,fileName)
+                    }
+
+                    downloadManager.enqueue(request)
+                    Toast.makeText(requireContext(),"다운로드 시작중...",Toast.LENGTH_SHORT).show()
+                }catch (e : Exception){
+                    if(ContextCompat.checkSelfPermission(requireContext(),android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(),
+                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            Toast.makeText(requireContext(), "첨부파일 다운로드를 위해\n동의가 필요합니다.", Toast.LENGTH_LONG).show();
+                            ActivityCompat.requestPermissions(requireActivity(),
+                                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                                110);
+                        } else {
+                            Toast.makeText(requireContext(), "첨부파일 다운로드를 위해\n동의가 필요합니다.", Toast.LENGTH_LONG).show();
+                            ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                                110);
+                        }
+                    }
+                }
+
             }
 
 
@@ -171,6 +250,8 @@ class TranslateFragment : Fragment() {
             }
 
         }
+
+
 
         binding.urlEdit.setOnEditorActionListener { textView, i, keyEvent ->
             if(i == EditorInfo.IME_ACTION_SEARCH){
@@ -265,7 +346,6 @@ class TranslateFragment : Fragment() {
 
         return binding.root
     }
-
 
     @Deprecated("Deprecated in Java")
     @SuppressLint("SetJavaScriptEnabled")
