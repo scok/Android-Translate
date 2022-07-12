@@ -3,6 +3,7 @@ package com.example.translation.ui.webtranslate
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Context.DOWNLOAD_SERVICE
@@ -22,6 +23,7 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
@@ -139,12 +141,14 @@ class TranslateFragment : Fragment() {
             }
 
             binding.webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
-
                 try{
-                    var downloadManager = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-                    var _contentDisposition = URLDecoder.decode(contentDisposition,"UTF-8")
+                    val downloadManager = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+                    val _contentDisposition = URLDecoder.decode(contentDisposition,"UTF-8")
 
                     var _mimetype = mimetype
+
+                    var url_arr = url.split("/")
+                    Log.d("Down-Sample", url_arr[url_arr.size-1])
 
                     var fileName = _contentDisposition.replace("attachment; filename=","")
                     if(!TextUtils.isEmpty(fileName)){
@@ -165,18 +169,20 @@ class TranslateFragment : Fragment() {
                         setDescription("Downloading File")
                         setAllowedOverMetered(true)
                         setAllowedOverRoaming(true)
-                        setTitle(fileName)
+                        setTitle(url_arr[url_arr.size-1])
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
                             setRequiresCharging(false)
                         }
 
                         allowScanningByMediaScanner()
                         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory().path,fileName)
+                        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS + "/",url_arr[url_arr.size-1]
+                        )
                     }
 
                     downloadManager.enqueue(request)
                     Toast.makeText(requireContext(),"다운로드 시작중...",Toast.LENGTH_SHORT).show()
+                    Log.d("Down-Sample",url)
                 }catch (e : Exception){
                     if(ContextCompat.checkSelfPermission(requireContext(),android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
                         if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(),
@@ -192,7 +198,6 @@ class TranslateFragment : Fragment() {
                         }
                     }
                 }
-
             }
 
 
