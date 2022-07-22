@@ -35,6 +35,7 @@
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout-w936dp/activity_login.xml" value="0.16641162968630452" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_book_mark.xml" value="0.34057971014492755" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_docs.xml" value="0.2453125" />
+        <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_favorites.xml" value="0.26992753623188404" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_image.xml" value="0.1778115501519757" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_login.xml" value="0.22036474164133737" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_main.xml" value="0.20567375886524822" />
@@ -56,12 +57,14 @@
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_bottom_sheet.xml" value="0.34057971014492755" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_dialog.xml" value="0.34057971014492755" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_dictionary.xml" value="0.225177304964539" />
+        <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_favorites.xml" value="0.26992753623188404" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_gallery.xml" value="0.20567375886524822" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_home.xml" value="0.20567375886524822" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_item_list_dialog_list_dialog.xml" value="0.34057971014492755" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_item_list_dialog_list_dialog_item.xml" value="0.34057971014492755" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_login.xml" value="0.2132725430597771" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_register.xml" value="0.21732522796352582" />
+        <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_search.xml" value="0.26992753623188404" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_setting.xml" value="0.2193515704154002" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_settings.xml" value="0.2545289855072464" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_slideshow.xml" value="0.20567375886524822" />

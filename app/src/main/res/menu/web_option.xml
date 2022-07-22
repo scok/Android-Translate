@@ -13,4 +13,11 @@
             android:id="@+id/mS"
             android:title="번역 설정" />
     </group>
+
+    <group
+        android:id="@+id/imgTranslate">
+        <item
+            android:id="@+id/mT"
+            android:title="이미지 번역" />
+    </group>
 </menu>

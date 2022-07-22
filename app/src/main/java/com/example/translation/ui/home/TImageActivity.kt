@@ -69,14 +69,6 @@ class TImageActivity : AppCompatActivity() {
             val file_name = intent.getStringExtra("file_name")
             val file_names = intent.getStringExtra("file_names")
 
-            if(!Python.isStarted()){
-                Python.start(AndroidPlatform(this))
-            }
-
-            if (image_dirs != null) {
-                Log.d("Test",image_dirs)
-            }
-
             if (image_dir != null) {
                 image_dir2 = image_dir
             }
@@ -131,20 +123,6 @@ class TImageActivity : AppCompatActivity() {
                 }
             })
 
-            /*
-            val py : Python = Python.getInstance()
-            val pyo : PyObject = py.getModule("test")
-            val imageStr = pyo.callAttr("translate",target_Language, image_dirs,file_name,file_names).toString()
-
-            val bytePlainOrg = Base64.decode(imageStr,0)
-            val inStream : ByteArrayInputStream = ByteArrayInputStream(bytePlainOrg)
-            val bm : Bitmap = BitmapFactory.decodeStream(inStream)
-            //trImageView.setImageBitmap(bm)
-
-            val imageView : SubsamplingScaleImageView = findViewById(R.id.trImageView)
-            imageView.setImage(ImageSource.bitmap(bm))
-
-             */
             progressDialog.dismiss()
         },1000)
     }

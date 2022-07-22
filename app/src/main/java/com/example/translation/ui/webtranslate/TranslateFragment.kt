@@ -1,9 +1,7 @@
 package com.example.translation.ui.webtranslate
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Context.DOWNLOAD_SERVICE
@@ -23,9 +21,8 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.PreferenceManager
 import com.example.translation.MainActivity
 import com.example.translation.R
@@ -35,6 +32,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.fragment_translate.*
 import org.json.JSONObject
+import java.io.*
 import java.net.URLDecoder
 import java.util.*
 
@@ -48,6 +46,7 @@ class TranslateFragment : Fragment() {
     private lateinit var customAlertDialogView : View
     private lateinit var nameTextField : TextInputLayout
     private lateinit var favorList : LinkedHashMap<String, String>
+    private var result : String = ""
     private var donwloadid : Long? = null
 
     private var _binding: FragmentTranslateBinding? = null
@@ -128,12 +127,23 @@ class TranslateFragment : Fragment() {
                     return super.shouldInterceptRequest(view, request)
                 }
 
+                @Deprecated("Deprecated in Java")
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                     if (url != null) {
                         if(url.substring(url.length-4) == ".pdf"){
-                            //val intent = Intent(requireContext(),DocsActivity::class.java)
-                            //startActivity(intent)
-                            Log.d("URL-Sample",url.substring(url.length-4))
+
+                            val url_arr = url.split("/")
+                            val file_name = url_arr[url_arr.size-1]
+                            val file_names = file_name.substring(0,file_name.length-4)
+
+                            val file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                            val file_dir = file.path + "/pdf_temp/$file_name"
+
+                            val intent = Intent(requireContext(),DocsActivity::class.java)
+                            intent.putExtra("pdf_dir",file_dir)
+                            intent.putExtra("pdf_name",file_name)
+                            intent.putExtra("pdf_names",file_names)
+                            startActivity(intent)
                         }
                     }
                     return super.shouldOverrideUrlLoading(view, url)
@@ -176,12 +186,13 @@ class TranslateFragment : Fragment() {
 
                         allowScanningByMediaScanner()
                         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS + "/",url_arr[url_arr.size-1]
+                        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS + "/pdf_temp/",url_arr[url_arr.size-1]
                         )
                     }
 
                     downloadManager.enqueue(request)
                     Toast.makeText(requireContext(),"다운로드 시작중...",Toast.LENGTH_SHORT).show()
+                    //MOVE_FILE(requireContext(),Environment.DIRECTORY_DOWNLOADS+"/pdf_temp/",url_arr[url_arr.size-1],)
                     Log.d("Down-Sample",url)
                 }catch (e : Exception){
                     if(ContextCompat.checkSelfPermission(requireContext(),android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -235,8 +246,11 @@ class TranslateFragment : Fragment() {
         binding.webView.clearCache(true)
         binding.webView.clearHistory()
 
-        binding.webView.loadUrl("https://www.google.com")
-
+        setFragmentResultListener("requestKey") { requestKey, bundle ->
+            result = bundle.getString("bundleKey").toString()
+            Log.d("URL-Sample",result)
+            binding.webView.loadUrl(result)
+        }
 
         materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
 
@@ -304,6 +318,29 @@ class TranslateFragment : Fragment() {
                     R.id.mS -> {
                         Toast.makeText(requireContext(),"메뉴4",Toast.LENGTH_SHORT).show()
                     }
+                    R.id.mT -> {
+                        val img_url = binding.webView.url
+                        Log.d("Img-Sample",img_url.toString())
+                        if (img_url != null) {
+                            if(img_url.lowercase(Locale.getDefault()).endsWith(".jpg") || img_url.lowercase(Locale.getDefault())
+                                    .endsWith(".png")){
+
+                                val request = DownloadManager.Request(Uri.parse(img_url))
+                                request.allowScanningByMediaScanner()
+
+                                request.setNotificationVisibility(
+                                    DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+
+                                val filename = img_url.split("/")
+                                request.setDestinationInExternalPublicDir(
+                                    Environment.DIRECTORY_DOWNLOADS+"/",
+                                    filename[filename.size-1]
+                                )
+                                val dm = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+                                dm.enqueue(request)
+                            }
+                        }
+                    }
                     else -> {
                     }
                 }
@@ -346,10 +383,51 @@ class TranslateFragment : Fragment() {
         }
 
         binding.webExit.setOnClickListener {
-            (activity as MainActivity).onBackPressed()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment_content_main, SearchFragment())
+                .commit()
         }
 
         return binding.root
+    }
+
+    fun MOVE_FILE(context: Context, inputPath: String, inputFile: String, outputPath: String) {
+        var `in`: InputStream? = null
+        var out: OutputStream? = null
+        try {
+            val dir = File(outputPath)
+            Log.e("dir", dir.path)
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+            Log.e("MOVE_FILE", outputPath + "/" + inputFile + "______" + dir.path)
+            `in` = FileInputStream(inputPath + inputFile)
+            out = FileOutputStream("$outputPath/$inputFile")
+            val buffer = ByteArray(1024)
+            var read: Int
+            while (`in`.read(buffer).also { read = it } != -1) {
+                out.write(buffer, 0, read)
+            }
+            `in`.close()
+            `in` = null
+            out.flush()
+            out.close()
+            out = null
+
+            // 기존 원본파일 삭제
+            File(inputPath + inputFile).delete()
+
+            // 파일 미디어 동기화 , 사진 혹은 동영상 파일 갤러리 동기화
+            val tmp_file = File("$outputPath/$inputFile")
+            context.sendBroadcast(
+                Intent(
+                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                    Uri.fromFile(tmp_file)
+                )
+            )
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
     @Deprecated("Deprecated in Java")

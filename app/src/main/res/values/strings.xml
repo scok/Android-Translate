@@ -10,7 +10,6 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="menu_home">문서 및 이미지 번역</string>
     <string name="menu_wt">웹사이트 번역</string>
     <string name="menu_dic">번역 필터</string>
     <string name="menu_st">설정</string>

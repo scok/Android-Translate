@@ -24,6 +24,8 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.example.translation.databinding.ActivityMainBinding
 import com.example.translation.ui.webtranslate.ApiTranslateNmt
+import com.example.translation.ui.webtranslate.SearchFragment
+import com.example.translation.ui.webtranslate.TranslateFragment
 import com.google.android.material.navigation.NavigationView
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.translate.Translate
@@ -84,7 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_manage
+                R.id.nav_gallery, R.id.nav_manage
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -554,8 +556,27 @@ class MainActivity : AppCompatActivity() {
             tagP = value
         }*/
     }
+
     fun checkTranslate(): Boolean {
         return fullTranslateMode
+    }
+
+    fun changeFragment(index: Int){
+        when(index){
+            1 -> {
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.nav_host_fragment_content_main,SearchFragment())
+                    .commit()
+            }
+
+            2 -> {
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.nav_host_fragment_content_main,TranslateFragment())
+                    .commit()
+            }
+        }
     }
 
 }
