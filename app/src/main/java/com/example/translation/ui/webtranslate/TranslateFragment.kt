@@ -157,7 +157,7 @@ class TranslateFragment : Fragment() {
 
                     var _mimetype = mimetype
 
-                    var url_arr = url.split("/")
+                    val url_arr = url.split("/")
                     Log.d("Down-Sample", url_arr[url_arr.size-1])
 
                     var fileName = _contentDisposition.replace("attachment; filename=","")
@@ -173,7 +173,7 @@ class TranslateFragment : Fragment() {
                         }
                     }
 
-                    var request = DownloadManager.Request(Uri.parse(url)).apply {
+                    val request = DownloadManager.Request(Uri.parse(url)).apply {
                         setMimeType(_mimetype)
                         addRequestHeader("User-Agent",userAgent)
                         setDescription("Downloading File")

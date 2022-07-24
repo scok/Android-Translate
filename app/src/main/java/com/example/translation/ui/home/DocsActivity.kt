@@ -4,24 +4,20 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.ParcelFileDescriptor
 import android.util.Base64
 import android.util.Log
-import android.webkit.WebSettings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
-import com.chaquo.python.PyObject
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
-import com.davemorrissey.labs.subscaleview.ImageSource
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.translation.R
 import com.github.barteksc.pdfviewer.util.FitPolicy
-import com.google.android.play.core.internal.bm
 import com.shockwave.pdfium.PdfDocument
 import com.shockwave.pdfium.PdfiumCore
 import kotlinx.android.synthetic.main.activity_docs.*
@@ -45,6 +41,8 @@ class DocsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_docs)
 
+        val list = ArrayList<Bitmap>()
+
         val progressDialog : ProgressDialog = ProgressDialog(this)
         progressDialog.setMessage("PDF 구성중...")
         progressDialog.setCancelable(true)
@@ -62,22 +60,16 @@ class DocsActivity : AppCompatActivity() {
             Log.d("PDF-Sample",pdf_dir+pdf_names)
 
             // PDF -> Bitmap
-            val images: List<Bitmap> = renderToBitmap(applicationContext,pdf_dir)
+            val images: MutableList<Bitmap> = renderToBitmap(applicationContext,pdf_dir)
             Log.d("Test-Sample","images : $images")
 
             // Bitmap 번역
-            val bitArray = Array<Bitmap>(images.size){images[0]}
-            Log.d("Test-Sample","bitArray : $bitArray")
-            for(i in images.indices){
+            for(i in 0 until images.size){
                 val j = i+1
                 if (pdf_names != null) {
                     saveBitmapToJpeg(images[i],"$pdf_names-$j")
                 }
-
-                Log.d("Test-Sample","i: $i, j: $j")
-
-                val target_Language = PreferenceManager.getDefaultSharedPreferences(this)
-                    .getString("image_targetLanguage", "").toString()
+                Log.d("Test-Sample", images.indices.toString())
 
                 val clientBuilder : OkHttpClient.Builder = OkHttpClient.Builder()
                 val loggingInterceptor : HttpLoggingInterceptor = HttpLoggingInterceptor()
@@ -102,84 +94,92 @@ class DocsActivity : AppCompatActivity() {
                 val requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file)
                 val body : MultipartBody.Part = MultipartBody.Part.createFormData("image",file.name,requestFile)
 
-                val call : Call<PapagoEntity> = service.transferPapago("w5lgfrssck","tct9yx0oteeuixAnAdIOETTtKiZFhixSLzNw3vvM",body,partMap)
-                call.enqueue(object: Callback<PapagoEntity> {
-                    override fun onResponse(
-                        call: Call<PapagoEntity>,
-                        response: Response<PapagoEntity>
-                    ) {
-                        if(response.isSuccessful){
-                            Log.d("Test","번역 완료")
-                            val imageStr = response.body()?.data?.renderedImage.toString()
-                            val bytePlainOrg = Base64.decode(imageStr,0)
-                            val inStream : ByteArrayInputStream = ByteArrayInputStream(bytePlainOrg)
-                            val bm : Bitmap = BitmapFactory.decodeStream(inStream)
-                            Log.d("Test-Sample","bm : $bm\n")
-                            bitArray[i] = bm
-                            Log.d("Test-Sample","bitArray1 : ${bitArray[0]}\n${bitArray[1]}")
-                            if(i==1)
-                            {
-                                // 번역한 Bitmap -> PDF 변환
-                                val document = android.graphics.pdf.PdfDocument()
-                                for(k in bitArray.indices){
-                                    val pageinfo = android.graphics.pdf.PdfDocument.PageInfo.Builder(bitArray[k].width,bitArray[k].height,k+1).create()
-                                    val page = document.startPage(pageinfo)
-                                    val canvas = page.canvas
-                                    val paint = Paint()
-                                    paint.color = Color.parseColor("#ffffff")
-                                    canvas.drawPaint(paint)
-                                    paint.color = Color.BLUE
-                                    canvas.drawBitmap(bitArray[k], Rect(0,0,bitArray[k].width,bitArray[k].height), Rect(0,0,bitArray[k].width,bitArray[k].height),null)
-                                    document.finishPage(page)
+                Log.d("Test-Sample","forei : $i")
+                Log.d("Test-Sample","forej : $j")
+
+                service.transferPapago("w5lgfrssck","tct9yx0oteeuixAnAdIOETTtKiZFhixSLzNw3vvM",body,partMap)
+                    .enqueue(object: Callback<PapagoEntity> {
+                        override fun onResponse(
+                            call: Call<PapagoEntity>,
+                            response: Response<PapagoEntity>
+                        ) {
+                            if(response.isSuccessful){
+                                Log.d("Test","번역 완료")
+                                val imageStr = response.body()?.data?.renderedImage.toString()
+                                val bytePlainOrg = Base64.decode(imageStr,0)
+                                val inStream : ByteArrayInputStream = ByteArrayInputStream(bytePlainOrg)
+                                val bm : Bitmap = BitmapFactory.decodeStream(inStream)
+                                Log.d("Test-Sample","bm : $bm\n")
+
+                                list.add(bm)
+                                Log.d("Test-Sample","list : $list")
+                                Log.d("Test-Sample","images.size : ${images.size}")
+                                Log.d("Test-Sample","i : $i")
+
+                                if(i==0){
+                                    // 번역한 Bitmap -> PDF 변환
+                                    val document = android.graphics.pdf.PdfDocument()
+                                    Log.d("Test-Sample","list.indices : ${list.indices}")
+                                    for(k in 0 until list.size){
+                                        val pageinfo = android.graphics.pdf.PdfDocument.PageInfo.Builder(list[k].width,list[k].height,k+1).create()
+                                        val page = document.startPage(pageinfo)
+                                        val canvas = page.canvas
+                                        val paint = Paint()
+                                        paint.color = Color.parseColor("#ffffff")
+                                        canvas.drawPaint(paint)
+                                        paint.color = Color.BLUE
+                                        canvas.drawBitmap(list[k], Rect(0,0,list[k].width,list[k].height), Rect(0,0,list[k].width,list[k].height),null)
+                                        document.finishPage(page)
+                                    }
+
+                                    // 파일 저장
+                                    val savePath = "$cacheDir/$pdf_names-translate.pdf"
+                                    val filePath = File(savePath)
+
+                                    try {
+                                        document.writeTo(FileOutputStream(filePath))
+                                        document.close()
+                                        Toast.makeText(applicationContext,"파일 저장 완료",Toast.LENGTH_SHORT).show()
+                                    }catch (e: FileNotFoundException){
+                                        e.printStackTrace()
+                                    }
+
+                                    // PDF 표시
+                                    pdfView.fromFile(File("$cacheDir/$pdf_names-translate.pdf"))
+                                        .enableSwipe(true) // allows to block changing pages using swipe
+                                        .swipeHorizontal(false)
+                                        .enableDoubletap(true)
+                                        .defaultPage(0)
+                                        .enableAnnotationRendering(false) // render annotations (such as comments, colors or forms)
+                                        .password(null)
+                                        .scrollHandle(null)
+                                        .enableAntialiasing(true) // improve rendering a little bit on low-res screens
+                                        .spacing(0)
+                                        .autoSpacing(false) // add dynamic spacing to fit each page on its own on the screen
+                                        .pageFitPolicy(FitPolicy.WIDTH) // mode to fit pages in the view
+                                        .fitEachPage(true) // fit each page to the view, else smaller pages are scaled relative to largest page.
+                                        .pageSnap(false) // snap pages to screen boundaries
+                                        .pageFling(false) // make a fling change only a single page like ViewPager
+                                        .nightMode(false) // toggle night mode
+                                        .load();
                                 }
 
-                                // 파일 저장
-                                val savePath = "$cacheDir/$pdf_names-translate.pdf"
-                                val filePath = File(savePath)
-
-                                try {
-                                    document.writeTo(FileOutputStream(filePath))
-                                    document.close()
-                                    Toast.makeText(applicationContext,"파일 저장 완료",Toast.LENGTH_SHORT).show()
-                                }catch (e: FileNotFoundException){
-                                    e.printStackTrace()
-                                }
+                            }else{
+                                Log.e("Test","번역 에러")
                             }
-                        }else{
-                            Log.e("Test","번역 에러")
                         }
-                    }
 
-                    override fun onFailure(call: Call<PapagoEntity>, t: Throwable) {
-                        Log.e("Test","통신 에러")
-                    }
-                })
+                        override fun onFailure(call: Call<PapagoEntity>, t: Throwable) {
+                            Log.e("Test","통신 에러")
+                        }
+                    })
             }
-
-            // PDF 표시
-            pdfView.fromFile(File("$cacheDir/$pdf_names-translate.pdf"))
-                .enableSwipe(true) // allows to block changing pages using swipe
-                .swipeHorizontal(false)
-                .enableDoubletap(true)
-                .defaultPage(0)
-                .enableAnnotationRendering(false) // render annotations (such as comments, colors or forms)
-                .password(null)
-                .scrollHandle(null)
-                .enableAntialiasing(true) // improve rendering a little bit on low-res screens
-                .spacing(0)
-                .autoSpacing(false) // add dynamic spacing to fit each page on its own on the screen
-                .pageFitPolicy(FitPolicy.WIDTH) // mode to fit pages in the view
-                .fitEachPage(true) // fit each page to the view, else smaller pages are scaled relative to largest page.
-                .pageSnap(false) // snap pages to screen boundaries
-                .pageFling(false) // make a fling change only a single page like ViewPager
-                .nightMode(false) // toggle night mode
-                .load();
             progressDialog.dismiss()
         },5000)
     }
 
     // PDF Bitmap 변환 함수
-    fun renderToBitmap(context: Context?, filePath: String?): List<Bitmap> {
+    fun renderToBitmap(context: Context?, filePath: String?): MutableList<Bitmap> {
         val images: MutableList<Bitmap> = ArrayList()
         val pdfiumCore = PdfiumCore(context)
         try {
