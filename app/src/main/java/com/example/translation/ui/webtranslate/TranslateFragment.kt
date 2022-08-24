@@ -28,6 +28,7 @@ import com.example.translation.MainActivity
 import com.example.translation.R
 import com.example.translation.databinding.FragmentTranslateBinding
 import com.example.translation.ui.home.DocsActivity
+import com.example.translation.ui.home.TImageActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.fragment_translate.*
@@ -136,10 +137,10 @@ class TranslateFragment : Fragment() {
                             val file_name = url_arr[url_arr.size-1]
                             val file_names = file_name.substring(0,file_name.length-4)
 
-                            val file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                            val file_dir = file.path + "/pdf_temp/$file_name"
+                            val file_dir = "${(activity as MainActivity).externalCacheDir}/$file_name"
 
                             val intent = Intent(requireContext(),DocsActivity::class.java)
+                            intent.putExtra("pdf_url",url)
                             intent.putExtra("pdf_dir",file_dir)
                             intent.putExtra("pdf_name",file_name)
                             intent.putExtra("pdf_names",file_names)
@@ -150,65 +151,22 @@ class TranslateFragment : Fragment() {
                 }
             }
 
-            binding.webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
-                try{
-                    val downloadManager = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-                    val _contentDisposition = URLDecoder.decode(contentDisposition,"UTF-8")
+            binding.webView.setOnLongClickListener { v ->
+                val hr : WebView.HitTestResult = (v as WebView).hitTestResult
+                Log.d("Test-Webview","getExtra="+hr.extra+"\t\tType="+hr.type)
+                if(hr.type == WebView.HitTestResult.IMAGE_TYPE){
+                    val image_url = hr.extra
+                    if(image_url!!.lastIndexOf("png") != -1){
+                        val url_arr = image_url.split("/")
+                        val file_name = url_arr[url_arr.size-1]
 
-                    var _mimetype = mimetype
-
-                    val url_arr = url.split("/")
-                    Log.d("Down-Sample", url_arr[url_arr.size-1])
-
-                    var fileName = _contentDisposition.replace("attachment; filename=","")
-                    if(!TextUtils.isEmpty(fileName)){
-                        _mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimetype)
-
-                        if(fileName.endsWith(";")){
-                            fileName = fileName.substring(0,fileName.length-1)
-                        }
-
-                        if(fileName.startsWith("\"") && fileName.endsWith("\"")){
-                            fileName = fileName.substring(1,fileName.length-1)
-                        }
-                    }
-
-                    val request = DownloadManager.Request(Uri.parse(url)).apply {
-                        setMimeType(_mimetype)
-                        addRequestHeader("User-Agent",userAgent)
-                        setDescription("Downloading File")
-                        setAllowedOverMetered(true)
-                        setAllowedOverRoaming(true)
-                        setTitle(url_arr[url_arr.size-1])
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-                            setRequiresCharging(false)
-                        }
-
-                        allowScanningByMediaScanner()
-                        setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS + "/pdf_temp/",url_arr[url_arr.size-1]
-                        )
-                    }
-
-                    downloadManager.enqueue(request)
-                    Toast.makeText(requireContext(),"다운로드 시작중...",Toast.LENGTH_SHORT).show()
-                    //MOVE_FILE(requireContext(),Environment.DIRECTORY_DOWNLOADS+"/pdf_temp/",url_arr[url_arr.size-1],)
-                    Log.d("Down-Sample",url)
-                }catch (e : Exception){
-                    if(ContextCompat.checkSelfPermission(requireContext(),android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(),
-                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                            Toast.makeText(requireContext(), "첨부파일 다운로드를 위해\n동의가 필요합니다.", Toast.LENGTH_LONG).show();
-                            ActivityCompat.requestPermissions(requireActivity(),
-                                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                                110);
-                        } else {
-                            Toast.makeText(requireContext(), "첨부파일 다운로드를 위해\n동의가 필요합니다.", Toast.LENGTH_LONG).show();
-                            ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                                110);
-                        }
+                        val intent = Intent(requireContext(),TImageActivity::class.java)
+                        intent.putExtra("image_url",image_url)
+                        intent.putExtra("image_name",file_name)
+                        startActivity(intent)
                     }
                 }
+                return@setOnLongClickListener false
             }
 
 
@@ -319,26 +277,11 @@ class TranslateFragment : Fragment() {
                         Toast.makeText(requireContext(),"메뉴4",Toast.LENGTH_SHORT).show()
                     }
                     R.id.mT -> {
-                        val img_url = binding.webView.url
-                        Log.d("Img-Sample",img_url.toString())
-                        if (img_url != null) {
-                            if(img_url.lowercase(Locale.getDefault()).endsWith(".jpg") || img_url.lowercase(Locale.getDefault())
-                                    .endsWith(".png")){
-
-                                val request = DownloadManager.Request(Uri.parse(img_url))
-                                request.allowScanningByMediaScanner()
-
-                                request.setNotificationVisibility(
-                                    DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-
-                                val filename = img_url.split("/")
-                                request.setDestinationInExternalPublicDir(
-                                    Environment.DIRECTORY_DOWNLOADS+"/",
-                                    filename[filename.size-1]
-                                )
-                                val dm = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-                                dm.enqueue(request)
-                            }
+                        val imgUrl = binding.webView.url
+                        Log.d("Img-Sample",imgUrl.toString())
+                        if (imgUrl != null && imgUrl.lastIndexOf("imgrc") != -1 ) {
+                            val intent = Intent(requireContext(),TImageActivity::class.java)
+                            startActivity(intent)
                         }
                     }
                     else -> {
@@ -552,6 +495,7 @@ class TranslateFragment : Fragment() {
     companion object {
         private const val REQUEST_RESULT = 1
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // If you have multiple activities returning results then you should include unique request codes for each

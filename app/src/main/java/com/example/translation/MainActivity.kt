@@ -579,4 +579,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun clearCache(){
+        val cacheDirFile : File = this.cacheDir
+        if(cacheDirFile.isDirectory){
+            clearSubCacheFiles(cacheDirFile)
+        }
+    }
+
+    private fun clearSubCacheFiles(cacheDirFile : File){
+        if(cacheDirFile.isFile){
+            return
+        }
+        for (cacheFile in cacheDirFile.listFiles()!!) {
+            if (cacheFile.isFile) {
+                if (cacheFile.exists()) {
+                    cacheFile.delete()
+                }
+            } else {
+                clearSubCacheFiles(cacheFile)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        clearCache()
+    }
 }
