@@ -25,6 +25,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="s">
         <activity
+            android:name=".ui.webtranslate.ImageViewerT"
+            android:exported="false" />
+        <activity
             android:name=".ui.webtranslate.FavoritesActivity"
             android:exported="false" />
         <activity
@@ -43,7 +46,7 @@
         <activity android:name=".ui.home.TImageActivity" />
         <activity
             android:name=".MainActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
     </application>
 
 </manifest>

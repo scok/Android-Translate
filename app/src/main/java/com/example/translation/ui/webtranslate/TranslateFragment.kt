@@ -7,12 +7,13 @@ import android.content.Context
 import android.content.Context.DOWNLOAD_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.text.TextUtils
+import android.util.Base64
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
@@ -28,11 +29,24 @@ import com.example.translation.MainActivity
 import com.example.translation.R
 import com.example.translation.databinding.FragmentTranslateBinding
 import com.example.translation.ui.home.DocsActivity
+import com.example.translation.ui.home.PapagoEntity
+import com.example.translation.ui.home.PapagoService
 import com.example.translation.ui.home.TImageActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.android.synthetic.main.activity_image_viewer_t.*
 import kotlinx.android.synthetic.main.fragment_translate.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.*
 import java.net.URLDecoder
 import java.util.*
@@ -271,10 +285,88 @@ class TranslateFragment : Fragment() {
             popup.setOnMenuItemClickListener { item ->
                 when(item.itemId){
                     R.id.mP -> {
-                        Toast.makeText(requireContext(),"메뉴3",Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(requireContext(),"메뉴3",Toast.LENGTH_SHORT).show()
+                       // (activity as MainActivity)
+                        val trasnlateScreenShotCachePath = (activity as MainActivity).translateScreenshot().toString()
+                        Toast.makeText(requireContext(),trasnlateScreenShotCachePath,Toast.LENGTH_SHORT).show()
+
+                        val clientBuilder : OkHttpClient.Builder = OkHttpClient.Builder()
+                        val loggingInterceptor : HttpLoggingInterceptor = HttpLoggingInterceptor()
+                        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+                        clientBuilder.addInterceptor(loggingInterceptor)
+
+                        val client : Retrofit = Retrofit.Builder()
+                            .baseUrl("https://naveropenapi.apigw.ntruss.com")
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .client(clientBuilder.build())
+                            .build()
+
+                        val file = File(trasnlateScreenShotCachePath)
+                        val service = client.create(PapagoService::class.java)
+
+                        val partMap = HashMap<String, RequestBody>()
+                        val trsource = RequestBody.create("text/plain".toMediaTypeOrNull() , "en")
+                        val trtarget = RequestBody.create("text/plain".toMediaTypeOrNull() , "ko")
+                        partMap["source"] = trsource
+                        partMap["target"] = trtarget
+
+                        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull() , file)
+                        val body : MultipartBody.Part = MultipartBody.Part.createFormData("image",file.name,requestFile)
+
+                      //  Log.d("Test-Sample","forei : $i")
+                       // Log.d("Test-Sample","forej : $j")
+
+                        service.transferPapago("w5lgfrssck","tct9yx0oteeuixAnAdIOETTtKiZFhixSLzNw3vvM",body,partMap)
+                            .enqueue(object: Callback<PapagoEntity> {
+                                override fun onResponse(
+                                    call: Call<PapagoEntity> ,
+                                    response: Response<PapagoEntity>
+                                ) {
+                                    if(response.isSuccessful){
+                                        Log.d("Test","번역 완료")
+                                        val imageStr = response.body()?.data?.renderedImage.toString()
+                                        val bytePlainOrg = Base64.decode(imageStr,0)
+                                        val inStream : ByteArrayInputStream = ByteArrayInputStream(bytePlainOrg)
+                                        val bm : Bitmap = BitmapFactory.decodeStream(inStream)
+                                        Log.d("Test-Sample","bm : $bm\n")
+
+                                        // 파일 저장
+                                        val savePath = "${context.cacheDir}-translate.jpg"
+                                        val filePath = File(savePath)
+
+                                        try {
+                                            val fos = FileOutputStream(filePath)
+                                            bm?.compress(Bitmap.CompressFormat.JPEG, 90, fos)
+
+                                            fos.close()
+                                            Log.d("Test","savePath: ${savePath}")
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                        }
+                                       // trimageView2.setImageBitmap(bm)
+
+                                        val intent = Intent((activity as MainActivity),ImageViewerT::class.java)
+                                        //intent.putExtra("favor_list", favorList) as LinkedHashMap<String, String>
+                                        //intent.putExtra("favor_list", favorList)
+                                        // startActivity(intent)
+                                        startActivity(intent)
+
+                                    }else{
+                                        Log.e("Test","번역 에러")
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<PapagoEntity> , t: Throwable) {
+                                    Log.e("Test","통신 에러")
+                                }
+                            })
+
+
                     }
                     R.id.mS -> {
                         Toast.makeText(requireContext(),"메뉴4",Toast.LENGTH_SHORT).show()
+
+
                     }
                     R.id.mT -> {
                         val imgUrl = binding.webView.url

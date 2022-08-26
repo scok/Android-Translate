@@ -7,6 +7,9 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
 import android.net.Uri
 import android.os.*
 import android.util.Base64
@@ -37,6 +40,8 @@ import java.io.FileOutputStream
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
+import java.io.*
+import java.net.URLEncoder
 
 var image_dir2 : String = ""
 

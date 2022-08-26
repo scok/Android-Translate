@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.StrictMode
 import android.view.*
@@ -15,6 +17,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.createBitmap
+import androidx.core.view.drawToBitmap
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -31,8 +35,11 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.translate.Translate
 import com.google.cloud.translate.TranslateOptions
 import com.googlecode.tesseract.android.TessBaseAPI
-import org.json.JSONObject
+import kotlinx.android.synthetic.main.fragment_translate.*
 import java.io.*
+import java.lang.String.format
+import java.text.DateFormat
+import java.util.*
 
 
 var pref: Int = 0
@@ -579,6 +586,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+
+    fun translateScreenshot() : File?{
+        //fun View.taranslateScreenshot() : File?{
+        var cusWebView2 = findViewById<WebView>(R.id.webView)
+        // Create bitmap and draw via canvas
+        //val bitmap =
+        //            Bitmap.createBitmap(this.width, this.height,
+        //                Bitmap.Config.ARGB_8888)
+        val bitmap =
+            Bitmap.createBitmap(cusWebView2.width, cusWebView2.height,
+                Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        //this.draw(canvas)
+        cusWebView2.draw(canvas)
+
+        // Create a file to save the bitmap
+        //val dirpath: String = this.context.cacheDir.toString()+""
+        val dirpath: String = cusWebView2.context.cacheDir.toString()+""
+        val file = File(dirpath)
+        if (!file.exists()) {
+            val mkdir: Boolean = file.mkdir()
+        }
+        val path = "$dirpath/Screenshot-${UUID.randomUUID()}.jpeg"
+        val imageurl = File(path)
+
+        // Save the bitmap into the file
+        bitmap.saveFile(imageurl)
+        return if (imageurl.length() > 0) {imageurl} else null
+
+    }
+    fun Bitmap?.saveFile(pictureFile: File): Boolean {
+        try {
+            val fos = FileOutputStream(pictureFile)
+            this?.compress(Bitmap.CompressFormat.JPEG, 90, fos)
+            fos.close()
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return false
+    }
     private fun clearCache(){
         val cacheDirFile : File = this.cacheDir
         if(cacheDirFile.isDirectory){
