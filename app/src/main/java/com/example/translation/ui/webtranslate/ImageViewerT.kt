@@ -19,5 +19,8 @@ class ImageViewerT : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        pageTranslate_end.setOnClickListener {
+            finish()
+        }
     }
 }
