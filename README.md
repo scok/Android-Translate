@@ -19,10 +19,10 @@
 ## 1.4. 사용 안내
 ### 1.4.1. 웹 뷰 실시간 번역
 ![그림2](https://user-images.githubusercontent.com/95574210/187357016-f6c8e372-8a69-438c-9d6f-bf0c9c227c80.png)
-웹 페이지 번역
+<br><br/>웹 페이지 번역
 
 ![그림1](https://user-images.githubusercontent.com/95574210/187357085-548e3566-1568-47dc-84fb-d7803ef1c1bf.png)
-웹 페이지 스크롤 번역
+<br><br/>웹 페이지 스크롤 번역
 
 ### 1.4.2. 이미지 및 PDF 번역
 
@@ -36,6 +36,14 @@
     2. 번역이 필요한 사이트에 들어간다.
     3.1. 단어 및 문장 번역이 필요한 경우, 해당 단어, 문장을 드래그한다. 그 후, 생성된 탭에서 번역을 터치한다.
     3.2. 사이트 전문 번역이 필요한 경우, 아무 단어, 문장을 드래그한다. 그 후, 생성된 탭에서 전체번역을 터치한다.
+ <br><br/>
+    
+ ![그림4](https://user-images.githubusercontent.com/95574210/187357564-88d0017f-4741-4ecb-885a-ee53c4e43939.png)
+ <br><br/>
+ ![그림5](https://user-images.githubusercontent.com/95574210/187357572-fd842637-d3b3-4a24-a0f8-1ce798552617.png)
+ <br><br/>
+ ![그림6](https://user-images.githubusercontent.com/95574210/187357578-17e14e2a-ae5d-4a44-a580-9a235b08c55b.png)
+ <br><br/>
 
 ### 2.1.2 이미지 번역
     1. 어플을 키고, 좌상 메뉴에서 문서 번역을 선택한다.
@@ -43,6 +51,13 @@
     3. 파일 액세스를 허용한다.
     4. 원하는 이미지를 선택한다.
     5. 번역 버튼을 누른다.
+<br><br/>
+![그림7](https://user-images.githubusercontent.com/95574210/187357583-e240b829-2231-45d8-b6c8-0e10156f67bb.png)
+<br><br/>
+![그림8](https://user-images.githubusercontent.com/95574210/187357589-b863952b-cf96-4301-bf89-f6ca60979e23.png)  
+<br><br/>
+![그림9](https://user-images.githubusercontent.com/95574210/187357592-daff43f7-c05f-4fe7-ae22-ee748568ed31.png)  
+<br><br/> 
 
 ### 2.1.3 PDF 번역
     1. 어플을 키고, 좌상 메뉴에서 문서 번역을 선택한다.
@@ -50,6 +65,12 @@
     3. 파일 액세스를 허용한다.
     4. 원하는 파일를 선택한다.
     5. 번역 버튼을 누른다.
+
+<br><br/>
+![그림10](https://user-images.githubusercontent.com/95574210/187357597-24c29d87-1527-476f-b49a-ccd828b6ba10.png)
+<br><br/>
+![캡처](https://user-images.githubusercontent.com/95574210/187357600-9fdde3b2-65ea-47bf-ba6a-ebd4c0c364fd.PNG)
+<br><br/>
 
 ## 2.2. 동작 설계도
 ### 2.2.1. 웹 뷰 실시간 번역
