@@ -14,7 +14,7 @@
     3. PDF 번역
     
 ## 1.3. 사용한 툴
-![툴](https://user-images.githubusercontent.com/95574210/174532562-1412aeda-b672-493f-86b1-b6234ca7b196.png)
+![제목 없음](https://user-images.githubusercontent.com/95574210/187355845-0f44318f-027d-4ab2-a406-79b17d68cfd1.png)
 
 ## 1.4. 사용 안내
 ### 1.4.1. 웹 뷰 실시간 번역
