@@ -18,21 +18,15 @@
 
 ## 1.4. 사용 안내
 ### 1.4.1. 웹 뷰 실시간 번역
-![웹뷰](https://user-images.githubusercontent.com/95574210/174531141-8ca75841-71d5-4015-92e8-2e58569ee610.PNG)
+![그림2](https://user-images.githubusercontent.com/95574210/187357016-f6c8e372-8a69-438c-9d6f-bf0c9c227c80.png)
+웹 페이지 번역
 
-출처 : https://edition.cnn.com/2022/06/19/europe/ukraine-russia-war-stoltenberg-johnson-intl-gbr/index.html
+![그림1](https://user-images.githubusercontent.com/95574210/187357085-548e3566-1568-47dc-84fb-d7803ef1c1bf.png)
+웹 페이지 스크롤 번역
 
-### 1.4.2. 이미지 번역
+### 1.4.2. 이미지 및 PDF 번역
 
-<p>
-    
-</p>
-
-### 1.4.3. PDF 번역
-
-<p>
-    
-</p>
+![그림3](https://user-images.githubusercontent.com/95574210/187357159-167ca2f0-a877-4759-a9c8-2e3fc9c339ec.png)
 
 ****
 # 2. 어플 사용법
