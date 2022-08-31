@@ -13,6 +13,7 @@ import android.os.ParcelFileDescriptor
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import com.example.translation.R
 import com.github.barteksc.pdfviewer.util.FitPolicy
 import com.shockwave.pdfium.PdfDocument
@@ -41,6 +42,9 @@ class DocsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_docs)
+
+        val target_Language = PreferenceManager.getDefaultSharedPreferences(this)
+            .getString("image_targetLanguage", "").toString()
 
         var list = ArrayList<Bitmap>()
         val intent2 = intent
@@ -109,7 +113,7 @@ class DocsActivity : AppCompatActivity() {
                             .build()
 
                         val partMap = HashMap<String, RequestBody>()
-                        val trsource = RequestBody.create(MediaType.parse("text/plain"),"en")
+                        val trsource = RequestBody.create(MediaType.parse("text/plain"),target_Language)
                         val trtarget = RequestBody.create(MediaType.parse("text/plain"),"ko")
                         partMap["source"] = trsource
                         partMap["target"] = trtarget

@@ -93,7 +93,7 @@ class TImageActivity : AppCompatActivity() {
             val service = client.create(PapagoService::class.java)
 
             val partMap = HashMap<String, RequestBody>()
-            val trsource = RequestBody.create(MediaType.parse("text/plain"),"en")
+            val trsource = RequestBody.create(MediaType.parse("text/plain"),target_Language)
             val trtarget = RequestBody.create(MediaType.parse("text/plain"),"ko")
             partMap.put("source",trsource)
             partMap.put("target",trtarget)
