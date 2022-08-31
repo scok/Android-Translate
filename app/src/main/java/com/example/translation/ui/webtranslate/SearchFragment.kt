@@ -34,22 +34,25 @@ class SearchFragment : Fragment() {
         binding.webAddress.setOnEditorActionListener { textView, i, keyEvent ->
             if(i == EditorInfo.IME_ACTION_SEARCH){
                 val loadingUrl = textView.text.toString()
+                var result = "https://google.com"
                 if (loadingUrl.startsWith("http://") || loadingUrl.startsWith("https://")) {
-                    val result = loadingUrl
-                    setFragmentResult("requestKey", bundleOf("bundleKey" to result))
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.nav_host_fragment_content_main, TranslateFragment())
-                        .commit()
+                    result = loadingUrl
                 } else if (loadingUrl.contains("www"))  {
+                    result = "http://$loadingUrl"
 
                 } else if (loadingUrl.contains(".com") )  {
-
+                    result = "http://www.$loadingUrl"
+                } else if (loadingUrl.isEmpty() )  {
+                    result = "https://www.google.com"
                 } else {
                     val textComponents = loadingUrl.split(" ")
                     val searchText = textComponents.joinToString("+")
-
+                    result = "https://www.google.com/search?q=$searchText"
                 }
-
+                setFragmentResult("requestKey", bundleOf("bundleKey" to result))
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment_content_main, TranslateFragment())
+                    .commit()
                 /*
                 val loadingUrl = textView.text.toString()
 
