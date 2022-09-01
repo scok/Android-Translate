@@ -35,15 +35,22 @@ class SearchFragment : Fragment() {
             if(i == EditorInfo.IME_ACTION_SEARCH){
                 val loadingUrl = textView.text.toString()
                 var result = "https://google.com"
+                val domains = arrayOf(".org",".net",".edu",".gov",".mil",
+                    ".kr",".jp",".us",".cn")
                 if (loadingUrl.startsWith("http://") || loadingUrl.startsWith("https://")) {
                     result = loadingUrl
-                } else if (loadingUrl.contains("www"))  {
+                } else if (loadingUrl.startsWith("www"))  {
                     result = "http://$loadingUrl"
-
-                } else if (loadingUrl.contains(".com") )  {
+                } else if (loadingUrl.endsWith(".com") )  {
                     result = "http://www.$loadingUrl"
                 } else if (loadingUrl.isEmpty() )  {
                     result = "https://www.google.com"
+                } else if (loadingUrl.contains("."))   {
+                    domains.forEach {
+                        if (loadingUrl.endsWith(it)){
+                                result = "http://www.$loadingUrl"
+                            }
+                    }
                 } else {
                     val textComponents = loadingUrl.split(" ")
                     val searchText = textComponents.joinToString("+")

@@ -247,15 +247,24 @@ class TranslateFragment : Fragment() {
         binding.urlEdit.setOnEditorActionListener { textView, i, keyEvent ->
             if(i == EditorInfo.IME_ACTION_SEARCH){
                 val loadingUrl = textView.text.toString()
+                val domains = arrayOf(".org",".net",".edu",".gov",".mil",
+                    ".kr",".jp",".us",".cn")
                 if (loadingUrl.startsWith("http://") || loadingUrl.startsWith("https://")) {
                     binding.webView.loadUrl(loadingUrl)
                     binding.urlEdit.setText(loadingUrl)
-                } else if (loadingUrl.contains("www"))  {
+                } else if (loadingUrl.startsWith("www."))  {
                     binding.webView.loadUrl("http://$loadingUrl")
                     binding.urlEdit.setText("http://$loadingUrl")
-                } else if (loadingUrl.contains(".com") )  {
+                } else if (loadingUrl.endsWith(".com") )  {
                     binding.webView.loadUrl("http://www.$loadingUrl")
                     binding.urlEdit.setText("http://www.$loadingUrl")
+                } else if (loadingUrl.contains("."))   {
+                    domains.forEach {
+                        if (loadingUrl.endsWith(it)){
+                            binding.webView.loadUrl("http://www.$loadingUrl")
+                            binding.urlEdit.setText("http://www.$loadingUrl")
+                        }
+                    }
                 } else {
                     val textComponents = loadingUrl.split(" ")
                     val searchText = textComponents.joinToString("+")
@@ -288,7 +297,7 @@ class TranslateFragment : Fragment() {
                         //Toast.makeText(requireContext(),"메뉴3",Toast.LENGTH_SHORT).show()
                        // (activity as MainActivity)
                         val trasnlateScreenShotCachePath = (activity as MainActivity).translateScreenshot().toString()
-                        Toast.makeText(requireContext(),trasnlateScreenShotCachePath,Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(requireContext(),trasnlateScreenShotCachePath,Toast.LENGTH_SHORT).show()
 
                         val clientBuilder : OkHttpClient.Builder = OkHttpClient.Builder()
                         val loggingInterceptor : HttpLoggingInterceptor = HttpLoggingInterceptor()
@@ -365,8 +374,8 @@ class TranslateFragment : Fragment() {
                     }
                     R.id.mS -> {
                         Toast.makeText(requireContext(),"메뉴4",Toast.LENGTH_SHORT).show()
-
-
+                        (activity as MainActivity).openSettingFragment()
+                            //미완성
                     }
                     R.id.mT -> {
                         val imgUrl = binding.webView.url
