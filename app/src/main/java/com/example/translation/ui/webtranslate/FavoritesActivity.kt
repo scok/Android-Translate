@@ -25,7 +25,7 @@ class FavoritesActivity : AppCompatActivity() {
 
         val intent = intent
         val imageView = ImageView(this@FavoritesActivity)
-        val icon = TranslateFragment().name()
+        val icon = TranslateFragment().icon: Bitmap?()
         //val favorList : LinkedHashMap<String, String>  = intent.getSerializableExtra("favor_list") as LinkedHashMap<String, String>
         //val items : ArrayList<String> = ArrayList(favorList.values)
         val items : ArrayList<String>  = intent.getSerializableExtra("favor_list") as ArrayList<String>
