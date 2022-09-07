@@ -163,4 +163,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.7.0-alpha02'
 
     implementation "androidx.fragment:fragment-ktx:1.5.0"
+    
+    implementation 'org.jsoup:jsoup:1.14.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2-native-mt'
 }
