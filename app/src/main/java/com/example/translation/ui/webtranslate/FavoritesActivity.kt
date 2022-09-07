@@ -14,6 +14,9 @@ class FavoritesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorites)
 
+        var doc = Jsoup.connect(url).get()
+        var elements = doc.select("link apple-touch-icon").select("head[sizes]")
+        
         val intent = intent
         //val favorList : LinkedHashMap<String, String>  = intent.getSerializableExtra("favor_list") as LinkedHashMap<String, String>
         //val items : ArrayList<String> = ArrayList(favorList.values)
@@ -24,6 +27,9 @@ class FavoritesActivity : AppCompatActivity() {
         favorites_list.setOnItemClickListener { adapterView, view, i, l ->
             intent.putExtra("favor_index",i )
             setResult(RESULT_OK, intent)
+            for(e in elements){
+                var url = e.absUrl("href")
+            }
             finish()
         }
         favorites_end.setOnClickListener {
