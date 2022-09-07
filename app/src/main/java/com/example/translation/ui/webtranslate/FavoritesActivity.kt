@@ -13,16 +13,12 @@ import android.webkit.WebViewClient
 
 class FavoritesActivity : AppCompatActivity() extends WebViewClient {
     
-     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-         view.loadUrl(url)
-         return true
-     }
-    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorites)
 
-        var doc = Jsoup.connect(url).get()
+        String now_url = mWvBrowser.getUrl()
+        var doc = Jsoup.connect(now_url).get()
         var elements = doc.select("link apple-touch-icon").select("head[sizes]")
         
         val intent = intent
