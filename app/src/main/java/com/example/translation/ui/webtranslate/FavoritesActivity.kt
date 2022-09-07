@@ -10,18 +10,21 @@ import com.example.translation.R
 import kotlinx.android.synthetic.main.activity_favorites.*
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import org.jsoup.Jsoup
 import java.net.URLDecoder
 
-class FavoritesActivity : AppCompatActivity() extends WebViewClient {
-    
+class FavoritesActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorites)
 
-        String now_url = mWvBrowser.getUrl()
+        /*
+        var now_url = mWvBrowser.getUrl()
         var doc = Jsoup.connect(now_url).get()
         var elements = doc.select("link apple-touch-icon").select("head[sizes]")
-        
+        */
+
         val intent = intent
         //val favorList : LinkedHashMap<String, String>  = intent.getSerializableExtra("favor_list") as LinkedHashMap<String, String>
         //val items : ArrayList<String> = ArrayList(favorList.values)
@@ -32,13 +35,17 @@ class FavoritesActivity : AppCompatActivity() extends WebViewClient {
         favorites_list.setOnItemClickListener { adapterView, view, i, l ->
             intent.putExtra("favor_index",i )
             setResult(RESULT_OK, intent)
+            /*
             for(e in elements){
                 var url = e.absUrl("href")
             }
+
+             */
             finish()
         }
         favorites_end.setOnClickListener {
             finish()
         }
+
     }
 }

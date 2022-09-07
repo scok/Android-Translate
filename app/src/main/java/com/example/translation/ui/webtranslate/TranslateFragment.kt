@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Context.DOWNLOAD_SERVICE
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
@@ -20,6 +21,7 @@ import android.view.inputmethod.EditorInfo
 import android.webkit.*
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -36,7 +38,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_image_viewer_t.*
 import kotlinx.android.synthetic.main.fragment_translate.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -69,6 +71,7 @@ class TranslateFragment : Fragment() {
 
     private val binding get() = _binding!!
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetJavaScriptEnabled", "DiscouragedPrivateApi")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,6 +87,7 @@ class TranslateFragment : Fragment() {
         favorList = LinkedHashMap<String, String>()
 
         binding.webView.apply {
+
             webSettings = binding.webView.settings
             webSettings.javaScriptEnabled = true
             webSettings.domStorageEnabled = true
@@ -91,6 +95,27 @@ class TranslateFragment : Fragment() {
             binding.webView.webChromeClient = object : WebChromeClient(){
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
                     binding.progressHorizontal.progress = newProgress
+                }
+
+                override fun onReceivedIcon(view: WebView?, icon: Bitmap?) {
+                    super.onReceivedIcon(view, icon)
+                    Log.d("Test-Sample",icon.toString())
+                    var storage = (activity as MainActivity).cacheDir
+                    var name = "sample.jpg"
+
+                    var tempFile = File(storage,name)
+
+                    try{
+                        tempFile.createNewFile()
+
+                        var out = FileOutputStream(tempFile)
+
+                        icon?.compress(Bitmap.CompressFormat.JPEG,100,out)
+
+                        out.close()
+                    }catch (e : FileNotFoundException){
+
+                    }
                 }
             }
             favorList= loadBookmark() as LinkedHashMap<String, String>
@@ -314,12 +339,12 @@ class TranslateFragment : Fragment() {
                         val service = client.create(PapagoService::class.java)
 
                         val partMap = HashMap<String, RequestBody>()
-                        val trsource = RequestBody.create("text/plain".toMediaTypeOrNull() , "en")
-                        val trtarget = RequestBody.create("text/plain".toMediaTypeOrNull() , "ko")
+                        val trsource = RequestBody.create(MediaType.parse("text/plain") , "en")
+                        val trtarget = RequestBody.create(MediaType.parse("text/plain") , "ko")
                         partMap["source"] = trsource
                         partMap["target"] = trtarget
 
-                        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull() , file)
+                        val requestFile = RequestBody.create(MediaType.parse("image/jpeg") , file)
                         val body : MultipartBody.Part = MultipartBody.Part.createFormData("image",file.name,requestFile)
 
                       //  Log.d("Test-Sample","forei : $i")
@@ -374,7 +399,7 @@ class TranslateFragment : Fragment() {
                     }
                     R.id.mS -> {
                         Toast.makeText(requireContext(),"메뉴4",Toast.LENGTH_SHORT).show()
-                        (activity as MainActivity).openSettingFragment()
+                        //(activity as MainActivity).openSettingFragment()
                             //미완성
                     }
                     R.id.mT -> {
@@ -422,6 +447,7 @@ class TranslateFragment : Fragment() {
            // startActivity(intent)
             startActivityForResult(intent,REQUEST_RESULT)
         }
+
         binding.webTranslate.setOnClickListener {
             (activity as MainActivity).translateToggle()
         }
