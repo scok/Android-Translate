@@ -10,6 +10,7 @@ import com.example.translation.R
 import kotlinx.android.synthetic.main.activity_favorites.*
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import java.net.URLDecoder
 
 class FavoritesActivity : AppCompatActivity() extends WebViewClient {
     
