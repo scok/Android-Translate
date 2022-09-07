@@ -8,8 +8,16 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.translation.MainActivity
 import com.example.translation.R
 import kotlinx.android.synthetic.main.activity_favorites.*
+import android.webkit.WebView
+import android.webkit.WebViewClient
 
-class FavoritesActivity : AppCompatActivity() {
+class FavoritesActivity : AppCompatActivity() extends WebViewClient {
+    
+     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+         view.loadUrl(url)
+         return true
+     }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorites)
