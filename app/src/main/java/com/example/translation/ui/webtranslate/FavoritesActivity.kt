@@ -10,8 +10,6 @@ import com.example.translation.R
 import kotlinx.android.synthetic.main.activity_favorites.*
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import org.jsoup.Jsoup
-import java.net.URLDecoder
 
 class FavoritesActivity : AppCompatActivity() {
 
@@ -26,6 +24,7 @@ class FavoritesActivity : AppCompatActivity() {
         */
 
         val intent = intent
+        val icon = TranslateFragment().name
         //val favorList : LinkedHashMap<String, String>  = intent.getSerializableExtra("favor_list") as LinkedHashMap<String, String>
         //val items : ArrayList<String> = ArrayList(favorList.values)
         val items : ArrayList<String>  = intent.getSerializableExtra("favor_list") as ArrayList<String>
@@ -34,6 +33,8 @@ class FavoritesActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
         favorites_list.setOnItemClickListener { adapterView, view, i, l ->
             intent.putExtra("favor_index",i )
+            ImageView imageView = (ImageView)findViewById(R.id.imageView)
+            imageView.setImageResource(icon)
             setResult(RESULT_OK, intent)
             /*
             for(e in elements){
