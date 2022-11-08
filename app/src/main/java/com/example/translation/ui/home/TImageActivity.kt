@@ -43,10 +43,10 @@ import java.net.URL
 import java.io.*
 import java.net.URLEncoder
 
-var image_dir2 : String = ""
-
+// 이미지 번역 클래스
 class TImageActivity : AppCompatActivity() {
 
+    // 이미지 파일 다운로드 변수
     private var mDownloadManager: DownloadManager? = null
     var mDownloadQueueId : Long? = null
 
@@ -56,27 +56,32 @@ class TImageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timage)
 
+        // 타겟 번역 언어 변수
         val target_Language = PreferenceManager.getDefaultSharedPreferences(this)
             .getString("image_targetLanguage", "").toString()
 
+        // 인텐트로부터 이미지 주소 및 이름 저장
         val intent = intent
-
         val image_url = intent.getStringExtra("image_url")
         val image_name = intent.getStringExtra("image_name")
 
-        val outputFilepath : String = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS+"/img_temp")}/$image_name"
+        // 이미지 파일 저장 위치 설정 후 다운로드
         val outputFilepath2 : String = "${externalCacheDir}/$image_name"
         val uri = Uri.parse(image_url)
         URLDownloading(uri,outputFilepath2)
 
+        // 로딩 창 구성
         val progressDialog : ProgressDialog = ProgressDialog(this)
         progressDialog.setMessage("이미지 구성중...")
         progressDialog.setCancelable(true)
         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Horizontal)
         progressDialog.show()
 
+        // 로딩 창과의 구별을 위한 핸들러 생성 -> 2초 뒤 작동
         val handler : Handler = Handler()
         handler.postDelayed(Runnable {
+
+            // API 연결
             val clientBuilder : OkHttpClient.Builder = OkHttpClient.Builder()
             val loggingInterceptor : HttpLoggingInterceptor = HttpLoggingInterceptor()
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -89,7 +94,6 @@ class TImageActivity : AppCompatActivity() {
                 .build()
 
             val file = File(outputFilepath2)
-            Log.d("Test-Sample",file.toString())
             val service = client.create(PapagoService::class.java)
 
             val partMap = HashMap<String, RequestBody>()
@@ -101,6 +105,7 @@ class TImageActivity : AppCompatActivity() {
             val requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file)
             val body : MultipartBody.Part = MultipartBody.Part.createFormData("image",file.name,requestFile)
 
+            // 이미지 파일 번역
             val call : Call<PapagoEntity> = service.transferPapago("w5lgfrssck","tct9yx0oteeuixAnAdIOETTtKiZFhixSLzNw3vvM",body,partMap)
             call.enqueue(object: Callback<PapagoEntity> {
                 override fun onResponse(
@@ -108,13 +113,15 @@ class TImageActivity : AppCompatActivity() {
                     response: Response<PapagoEntity>
                 ) {
                     if(response.isSuccessful){
-                        Log.d("Test","번역 완료")
+                        
+                        // 번역된 이미지 파일 값을 비트맵으로 변환 후 이미지 뷰에 표시
                         val imageStr = response.body()?.data?.renderedImage.toString()
                         val bytePlainOrg = Base64.decode(imageStr,0)
                         val inStream : ByteArrayInputStream = ByteArrayInputStream(bytePlainOrg)
                         val bm : Bitmap = BitmapFactory.decodeStream(inStream)
                         val imageView = findViewById<ImageView>(R.id.trImageView)
                         imageView.setImageBitmap(bm)
+                        progressDialog.dismiss()
                     }else{
                         Log.e("Test","번역 에러")
                     }
@@ -124,11 +131,10 @@ class TImageActivity : AppCompatActivity() {
                     Log.e("Test","통신 에러")
                 }
             })
-
-            progressDialog.dismiss()
         },2000)
     }
 
+    // 이미지 URL 다운로드 함수
     private fun URLDownloading(url: Uri, outputFilepath: String){
         if(mDownloadManager == null){
             mDownloadManager = (applicationContext.getSystemService(Context.DOWNLOAD_SERVICE)) as DownloadManager
@@ -148,6 +154,7 @@ class TImageActivity : AppCompatActivity() {
         mDownloadQueueId = mDownloadManager!!.enqueue(request)
     }
 
+    // 캐쉬 삭제 함수
     private fun clearCache(){
         val cacheDirFile : File = this.cacheDir
         if(cacheDirFile.isDirectory){

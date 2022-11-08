@@ -7,7 +7,6 @@ import android.content.Context
 import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.ParcelFileDescriptor
 import android.util.Base64
@@ -31,9 +30,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.*
 import java.lang.Runnable
 
-
+// 문서 번역 클래스
 class DocsActivity : AppCompatActivity() {
 
+    // PDF 파일 다운로드 변수
     private var mDownloadManager: DownloadManager? = null
     var mDownloadQueueId : Long? = null
 
@@ -43,49 +43,48 @@ class DocsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_docs)
 
+        // 타겟 번역 언어 변수
         val target_Language = PreferenceManager.getDefaultSharedPreferences(this)
             .getString("image_targetLanguage", "").toString()
 
-        var list = ArrayList<Bitmap>()
+        var list = ArrayList<Bitmap>() // 비트맵 배열
+
+        // 인텐트로부터 pdf 주소 및 위치, 이름 저장
         val intent2 = intent
         val pdf_url = intent2.getStringExtra("pdf_url")
         val pdf_dir = intent2.getStringExtra("pdf_dir")
-        //val pdf_dirs = intent2.getStringExtra("pdf_dirs")
         val pdf_name = intent2.getStringExtra("pdf_name")
         val pdf_names = intent2.getStringExtra("pdf_names")
 
-        val outputFilepath2 : String = "${externalCacheDir}/$pdf_name"
+        // PDF 파일 저장 위치 설정 및 다운로딩딩
+       val outputFilepath2 : String = "${externalCacheDir}/$pdf_name"
         val uri = Uri.parse(pdf_url)
         URLDownloading(uri,outputFilepath2)
 
+        // 로딩 창 구성
         val progressDialog : ProgressDialog = ProgressDialog(this)
         progressDialog.setMessage("PDF 구성중...")
         progressDialog.setCancelable(true)
         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Horizontal)
         progressDialog.show()
 
+        // 로딩 창과의 구별을 위한 핸들러 생성 -> 1초 뒤 작동
         val handler : Handler = Handler()
         handler.postDelayed(Runnable {
             // PDF -> Bitmap
             val images: MutableList<Bitmap> = renderToBitmap(applicationContext,pdf_dir)
-            Log.d("Test-Sample","images : $images")
-
             list = images as ArrayList<Bitmap>
 
-            Log.d("Test-Sample", images.indices.toString())
-            // Bitmap 번역
+            // Bitmap 파일 JPEG 형식으로 저장
             for(i in 0 until images.size){
                 val j = i+1
                 if (pdf_names != null) {
                     saveBitmapToJpeg(images[i],"$pdf_names-$j")
                 }
-
-                Log.d("Test-Sample","i : $i")
-                Log.d("Test-Sample","j : $j")
-
             }
         },1000)
 
+        // 로딩 창과의 구별을 위한 핸들러 생성 -> 6초 뒤 작동
         handler.postDelayed(Runnable {
 
             GlobalScope.launch {
@@ -98,9 +97,7 @@ class DocsActivity : AppCompatActivity() {
                     for (i in 0 until list.size){
                         val j = i + 1
 
-                        Log.d("Test-Sample","i : $i")
-                        Log.d("Test-Sample","j : $j")
-
+                        // API 연결
                         val clientBuilder : OkHttpClient.Builder = OkHttpClient.Builder()
                         val loggingInterceptor : HttpLoggingInterceptor = HttpLoggingInterceptor()
                         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -118,6 +115,7 @@ class DocsActivity : AppCompatActivity() {
                         partMap["source"] = trsource
                         partMap["target"] = trtarget
 
+                        // 저장된 JPEG 파일을 지정
                         val file = File("$cacheDir/$pdf_names-$j.jpg")
                         val requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file)
                         val body : MultipartBody.Part = MultipartBody.Part.createFormData("image",file.name,requestFile)
@@ -125,14 +123,14 @@ class DocsActivity : AppCompatActivity() {
                         val service = client.create(PapagoService::class.java)
                         val res : Call<PapagoEntity> = service.transferPapago("w5lgfrssck","tct9yx0oteeuixAnAdIOETTtKiZFhixSLzNw3vvM",body,partMap)
 
+                        // 번역된 이미지 값을 비트맵으로 변환
                         val imageStr = res.execute().body()?.data?.renderedImage.toString()
                         val bytePlainOrg = Base64.decode(imageStr,0)
                         val inStream = ByteArrayInputStream(bytePlainOrg)
                         val bm : Bitmap = BitmapFactory.decodeStream(inStream)
 
+                        // 임시 리스트에 추가
                         list2.add(bm)
-
-                        Log.d("Test-Sample","list2 : $list2")
 
                         if(i==(list.size-1)){
 
@@ -190,6 +188,7 @@ class DocsActivity : AppCompatActivity() {
 
     }
 
+    // PDF URL 다운로드 함수
     private fun URLDownloading(url: Uri, outputFilepath: String){
         if(mDownloadManager == null){
             mDownloadManager = (applicationContext.getSystemService(Context.DOWNLOAD_SERVICE)) as DownloadManager
@@ -234,7 +233,7 @@ class DocsActivity : AppCompatActivity() {
         return images
     }
 
-    // Bitmap을 jpg로 변환
+    // Bitmap -> JPEG 변환 함수
     private fun saveBitmapToJpeg(bitmap: Bitmap, name: String) {
 
         //내부저장소 캐시 경로를 받아옵니다.
@@ -285,25 +284,6 @@ class DocsActivity : AppCompatActivity() {
             } else {
                 clearSubCacheFiles(cacheFile)
             }
-        }
-    }
-
-    private fun setDirEmpty(dirName : String){
-
-        val path = Environment.getExternalStorageDirectory().toString() + "/pdf_temp/"
-
-        val dir = File(path)
-        val childFileList = dir.listFiles()
-
-        if(dir.exists()){
-            for (childFile in childFileList) {
-                if(childFile.isDirectory){
-                    setDirEmpty(childFile.absolutePath)
-                }else{
-                    childFile.delete()
-                }
-            }
-            dir.delete()
         }
     }
 

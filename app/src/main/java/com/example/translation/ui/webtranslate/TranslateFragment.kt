@@ -2,18 +2,15 @@ package com.example.translation.ui.webtranslate
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.DownloadManager
 import android.content.Context
-import android.content.Context.DOWNLOAD_SERVICE
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.text.TextUtils
+import android.os.SystemClock
 import android.util.Base64
 import android.util.Log
 import android.view.*
@@ -22,8 +19,6 @@ import android.webkit.*
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.PreferenceManager
@@ -36,7 +31,6 @@ import com.example.translation.ui.home.PapagoService
 import com.example.translation.ui.home.TImageActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.activity_image_viewer_t.*
 import kotlinx.android.synthetic.main.fragment_translate.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -50,8 +44,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.*
-import java.net.URLDecoder
-import java.util.*
+import java.lang.reflect.InvocationTargetException
 
 
 var originalLanguage: String = ""
@@ -91,6 +84,7 @@ class TranslateFragment : Fragment() {
             webSettings = binding.webView.settings
             webSettings.javaScriptEnabled = true
             webSettings.domStorageEnabled = true
+
 
             binding.webView.webChromeClient = object : WebChromeClient(){
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
@@ -203,6 +197,9 @@ class TranslateFragment : Fragment() {
                         intent.putExtra("image_url",image_url)
                         intent.putExtra("image_name",file_name)
                         startActivity(intent)
+                    }
+                    else{
+                        return@setOnLongClickListener false
                     }
                 }
                 return@setOnLongClickListener false
@@ -403,14 +400,10 @@ class TranslateFragment : Fragment() {
                             //미완성
                     }
                     R.id.mT -> {
-                        val imgUrl = binding.webView.url
-                        Log.d("Img-Sample",imgUrl.toString())
-                        if (imgUrl != null && imgUrl.lastIndexOf("imgrc") != -1 ) {
-                            val intent = Intent(requireContext(),TImageActivity::class.java)
-                            startActivity(intent)
-                        }
+
                     }
                     else -> {
+
                     }
                 }
                 false

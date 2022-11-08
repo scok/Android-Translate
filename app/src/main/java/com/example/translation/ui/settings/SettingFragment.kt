@@ -9,6 +9,7 @@ import com.example.translation.MainActivity
 import com.example.translation.R
 import com.example.translation.pref
 
+// 앱 설정 클래스
 class SettingFragment : PreferenceFragmentCompat() {
     lateinit var mainActivity: MainActivity
     lateinit var prefs : SharedPreferences
@@ -23,15 +24,16 @@ class SettingFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.setting_preference,rootKey)
 
         mainActivity = context as MainActivity
-        trlanPreference = findPreference("tr_lan1")
-        trlan2Preference = findPreference("tr_lan2")
-        borderthickPreference = findPreference("border_thick")
-        borderstylePreference = findPreference("border_style")
-        imageTLanguage = findPreference("image_targetLanguage")
-        imageExPreference = findPreference("image_extension")
+        trlanPreference = findPreference("tr_lan1") // 대상 언어
+        trlan2Preference = findPreference("tr_lan2") // 번역 언어
+        borderthickPreference = findPreference("border_thick") // 테두리 굵기
+        borderstylePreference = findPreference("border_style") // 테두리 스타일
+        imageTLanguage = findPreference("image_targetLanguage") // 이미지 번역 언어
 
         prefs = PreferenceManager.getDefaultSharedPreferences(mainActivity)
-
+        
+        // 각 설정 값 초기 설정
+        
         if(prefs.getString("tr_lan1","") != ""){
             trlanPreference?.summary = prefs.getString("tr_lan1","영어")
         }
@@ -52,11 +54,9 @@ class SettingFragment : PreferenceFragmentCompat() {
             imageTLanguage?.summary = prefs.getString("image_targetLanguage","en")
         }
 
-        if(prefs.getString("image_extension","") != ""){
-            imageExPreference?.summary = prefs.getString("image_extension","png")
-        }
     }
 
+    // 클릭한 값에 따라 설정 값 반영
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, s ->
         when(s){
             "tr_lan1" -> {
@@ -79,10 +79,6 @@ class SettingFragment : PreferenceFragmentCompat() {
                 val summary = prefs.getString("image_targetLanguage","en")
                 imageTLanguage?.summary = summary
             }
-            "image_extension" -> {
-                val summary = prefs.getString("image_extension","png")
-                imageExPreference?.summary = summary
-            }
         }
     }
 
@@ -95,18 +91,6 @@ class SettingFragment : PreferenceFragmentCompat() {
         super.onPause()
         prefs.unregisterOnSharedPreferenceChangeListener(prefListener)
     }
-
-    /*
-    override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
-        if(preference == listPreference){
-            listPreference.summary = newValue.toString()
-        }
-        else if(preference == listPreference2){
-            listPreference2.summary = newValue.toString()
-        }
-        return true
-    }
-     */
 
     override fun onDestroy() {
         super.onDestroy()

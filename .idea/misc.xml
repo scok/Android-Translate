@@ -51,6 +51,7 @@
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_docs.xml" value="0.2453125" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_favorites.xml" value="0.24062816616008106" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_image.xml" value="0.1778115501519757" />
+        <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_image_viewer_t.xml" value="0.38645833333333335" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_login.xml" value="0.22036474164133737" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_main.xml" value="0.20567375886524822" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/activity_main2.xml" value="0.20567375886524822" />
@@ -77,6 +78,7 @@
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_item_list_dialog_list_dialog_item.xml" value="0.34057971014492755" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_login.xml" value="0.2132725430597771" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_register.xml" value="0.21732522796352582" />
+        <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_search.xml" value="0.23097826086956522" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_setting.xml" value="0.2193515704154002" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_settings.xml" value="0.2545289855072464" />
         <entry key="..\:/Users/wo747/AndroidStudioProjects/WebTranslation/app/src/main/res/layout/fragment_slideshow.xml" value="0.20567375886524822" />
