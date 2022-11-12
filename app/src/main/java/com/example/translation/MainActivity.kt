@@ -1,15 +1,13 @@
 package com.example.translation
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.SharedPreferences
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.StrictMode
+import android.util.Log
 import android.view.*
 import android.webkit.ValueCallback
 import android.webkit.WebView
@@ -17,8 +15,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.createBitmap
-import androidx.core.view.drawToBitmap
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -31,16 +27,19 @@ import com.example.translation.ui.webtranslate.ApiTranslateNmt
 import com.example.translation.ui.webtranslate.SearchFragment
 import com.example.translation.ui.webtranslate.TranslateFragment
 import com.google.android.material.navigation.NavigationView
+import com.google.auth.oauth2.ClientId
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.translate.Translate
 import com.google.cloud.translate.TranslateOptions
 import com.googlecode.tesseract.android.TessBaseAPI
+import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.fragment_setting.*
 import kotlinx.android.synthetic.main.fragment_translate.*
 import java.io.*
-import java.lang.String.format
-import java.text.DateFormat
 import java.util.*
 
+val clientId = "w5lgfrssck"
+val clientSecret = "tct9yx0oteeuixAnAdIOETTtKiZFhixSLzNw3vvM"
 
 var pref: Int = 0
 var pref2: Int = 0
@@ -55,8 +54,11 @@ var hexColor3: String = ""
 //var tagP = null
 var fullTranslateMode = false   //전체번역 on off
 var translateOn = false // true 시 번역
+var translatedCheck = false // 번역했을시 true (계속 번역하기위해) [ 1사이클 단위 체크 ]
+var translatedSuccess = false // 번역성공 여부2 [ 각각의 태그별로 적용 ]
 var innerWindowHeight = 0   // 스크린 사이즈
-var originScrollY = 0
+var originScrollY : Int= 0
+var translateStep : Int= 0
 //var scrollYCheck = 0
 //var pTagTextArray = arrayOf<String>()
 //p , a , strong ,li
@@ -69,6 +71,29 @@ var maxTagStrongIndex = 0
 var tagLiIndex = 0
 var maxTagLiIndex = 0
 
+var tagListInit = arrayListOf<String>(
+    "h1","h2","h3","h4","h5","h6","p","li","td","th"
+) // "td" "a"
+// "h1","h2","h3","h4","h5","h6",
+// "p","b","i","string","em"
+var tagListEnable = arrayListOf<String>()
+var tagListIndex = arrayListOf<Int>()
+var tagListMax = arrayListOf<Int>()
+/*
+var TagArray = arrayMapOf(Pair("P",0),Pair("A",0),Pair("Li",0))
+public class TagCalss(name:String,maxIndex:Int,currentIndex:Int,locationY:Int) {
+    lateinit var name : String
+    val maxIndex : Int = 0
+    val currentIndex : Int = 0
+    val locationY : Int = 0
+    init {
+        if(name.isEmpty())
+            throw IllegalAccessException("Error")
+    }
+    this.name = name
+    this.maxIndex = maxIndex
+
+}*/
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -187,7 +212,7 @@ class MainActivity : AppCompatActivity() {
 
         //-----------------
         cusWebView2.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-            if (originScrollY < scrollY){
+            if (originScrollY <= scrollY){
                 originScrollY = scrollY
                 translateOn = true
             }
@@ -268,13 +293,55 @@ class MainActivity : AppCompatActivity() {
     }
 
     val handler = Handler()
-    val millisTime = 200
+    val millisTimeRetry = 20
+    val millisTime = 400
+    val millisTimeSleep = 1500
     val handlerTask = object : Runnable {
         override fun run() {
             // do task
-            if (translateOn && fullTranslateMode ) {
+            if (translateOn && fullTranslateMode) {
                 val cusWebView2 = findViewById<WebView>(R.id.webView)
-
+                // Log.v("번역","${translateStep.toString()} / ${tagListEnable.size.toString()} / / 체크")
+                cusWebView2.evaluateJavascript(
+                    "javascript:(function getPTagText2(){\n" +
+                            "   var tagP = document.getElementsByTagName(\'${tagListEnable[translateStep]}\');\n" +
+                            "   var cord = tagP[${tagListIndex[translateStep]}].getBoundingClientRect(); \n" +
+                            "   return cord.y;\n" +
+                            "})()"
+                ) { value ->
+                    //   Log.v("번역","${translateStep.toString()} / ${tagListEnable.size.toString()} / ${value.toString()} / 체크")
+                    if(tagListIndex[translateStep] < tagListMax[translateStep] && value.toFloat() <= innerWindowHeight+100){//innerWindowHeight){
+                        cusWebView2.evaluateJavascript(
+                            "javascript:(function getPTagText3(){\n" +
+                                    "   var tagP = document.getElementsByTagName(\'${tagListEnable[translateStep]}\');\n" +
+                                    "   var textString = tagP[${tagListIndex[translateStep]}].innerText; \n" +
+                                    "   return textString;\n" +
+                                    "})()"
+                        ){ value ->
+                            // Toast.makeText(applicationContext , "$value" , Toast.LENGTH_SHORT).show()
+                            val str = value.substring(1, value.toString().length-1)
+                            val translateTask = ApiTranslateNmt(str).execute().get()
+                            //val translateTask = str
+                            cusWebView2.evaluateJavascript(
+                                "javascript:(function translateText(){\n" +
+                                        "   var tagP = document.getElementsByTagName(\'${tagListEnable[translateStep]}\');\n" +
+                                        "   const newDiv = document.createElement('div');\n"+
+                                        "   newDiv.style.backgroundColor = \"$hexColor\";\n" +
+                                        "   newDiv.style.color = \"$hexColor2\";\n" +
+                                        "   newDiv.style.border = \"$pref4 $pref5 $hexColor3\";\n" +
+                                        "   newDiv.style.borderRadius = \"25px\";\n" +
+                                        "   const newText = document.createTextNode(\"${translateTask}\");\n"+
+                                        "   newDiv.appendChild(newText);\n"+
+                                        "   tagP[${tagListIndex[translateStep]}].appendChild(newDiv);\n"+
+                                        "})()", null
+                            )
+                            tagListIndex[translateStep] += 1
+                            translatedCheck = true
+                            translatedSuccess = true
+                        }
+                    }
+                }
+                /*
                 //-- PTag -- //
                 if( maxTagPIndex != 0) {
                         // scrollYCheck = scrollY+50
@@ -461,10 +528,58 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                 }
+                */
                 //----------------------------------------//
+                //Log.v("번역","${translateStep} / ${tagListEnable.size} / ${tagListIndex[translateStep]} / ${tagListMax[translateStep]} /${tagListEnable[translateStep]}")
+                //Toast.makeText(applicationContext , "${translateStep.toString()}" , Toast.LENGTH_SHORT).show()
+                if (tagListIndex[translateStep].toInt() == tagListMax[translateStep].toInt()){ //특정태그를 전부 번역하면 해당 태그를 번역할 목록에서 제거
+                    tagListEnable.removeAt(translateStep)
+                    tagListIndex.removeAt(translateStep)
+                    tagListMax.removeAt(translateStep)
+                    // Log.v("번역","${translateStep.toString()} / ${tagListEnable.size.toString()} /${tagListEnable[translateStep]} / 제거됨")
+                    // translateStep -= 1
+                    // Log.v("번역","${translateStep.toString()}")
+                }
+                else {
+                    translateStep += 1  //태그 순회
+                }
+                if ( translateStep >= tagListEnable.size){      //각 태그들을 1번씩 순회할 동안
+                    translateStep = 0
+                    if (translatedSuccess){                       // 마지막 태그가 번역 성공했으면
+                        translatedCheck = false
+                        translatedSuccess = false
+                        handler.postDelayed(this, millisTime.toLong()) // millisTiem 이후 다시
+                    }
+                    else if (translatedCheck){                  //1번이상 번역을 했으나 마지막 태그는 번역 실패한 경우
+                        translatedCheck = false
+                        translatedSuccess = false
+                        handler.postDelayed(this, millisTimeRetry.toLong()) //빠르게 다음 태그로 넘어감
+                    }
+                    else {                                      // 활성화된 모든 태그를 순회하고도 번역한게 없으면
+                        translateOn = false                     //번역 off ( 스크롤을 내릴때까지 대기 )
+                        translatedSuccess = false
+                        translatedCheck = false
+                        handler.postDelayed(this, millisTimeSleep.toLong()) // sleep 모드 ( 오래 대기 )
+                    }
+                }
+                else if(translatedSuccess){    //번역 성공시
+                    translatedSuccess = false
+                    handler.postDelayed(this, millisTime.toLong())  // 잠시 대기
+                }
+                else{                       //번역 실패시
+                    handler.postDelayed(this, millisTimeRetry.toLong()) //즉시 다음 태그 번역
+                }
             }
-            translateOn = false
-            handler.postDelayed(this, millisTime.toLong()) // millisTiem 이후 다시
+            else{                                       // 번역이 비활성화 상태면
+                // if(tagListIndex.size > 0){
+                // Toast.makeText(applicationContext , "${tagListIndex.size?.toString()} a ${tagListIndex[3]?.toString()} < ${tagListMax.size?.toString()} a${tagListMax[3]?.toString()}" , Toast.LENGTH_SHORT).show()
+                // Toast.makeText(applicationContext , " ${tagListEnable[0]} ${tagListEnable[1]} ${tagListEnable[2]} ${tagListEnable[3]}" , Toast.LENGTH_SHORT).show()
+                //  }
+                translatedSuccess = false
+                translatedCheck = false
+                translateOn = false
+                handler.postDelayed(this, millisTimeSleep.toLong()) // sleep 모드 ( 오래 대기 )
+            }
         }
     }
 
@@ -479,21 +594,67 @@ class MainActivity : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
+    /*
+    fun testTranslateToggle(){
+        val TestVK = TagCalss
+        TestVK.name = "P"
 
+    }*/
+
+    fun returnAPI() : String{
+        return clientId.toString()
+    }
+    fun returnID() : String{
+        return clientSecret.toString()
+    }
     fun translateToggle() {
         var cusWebView2 = findViewById<WebView>(R.id.webView)
         if (fullTranslateMode){
             fullTranslateMode = false
             translateOn = false
-
+            tagListEnable.clear()
+            tagListIndex.clear()
+            tagListMax.clear()
+            translateStep = 0
             Toast.makeText(applicationContext , "번역 OFF" , Toast.LENGTH_SHORT).show()
         }
         else {
             fullTranslateMode = true
             translateOn = true
+            originScrollY = 0
+            translateStep = 0
+            Toast.makeText(applicationContext , "번역 ON" , Toast.LENGTH_SHORT).show()
+            cusWebView2.evaluateJavascript(
+                "javascript:(function getWindowHeight(){\n" +
+                        "   return window.innerHeight;\n" +
+                        "})()"
+            ){value ->  innerWindowHeight = value.toInt()
+                //Toast.makeText(applicationContext , innerWindowHeight.toString() , Toast.LENGTH_SHORT).show()
+            }
+
+            for(i: Int in 0 until tagListInit.size){
+                cusWebView2.evaluateJavascript(
+                    "javascript:(function getPTagText55(){\n" +
+                            "   var tagP = document.getElementsByTagName(\'${tagListInit[i]}\');\n" +
+                            "   return tagP.length;\n" +
+                            "})()"
+                ){ value ->
+                    if (value.toInt() > 0){
+                        tagListEnable.add(tagListInit[i])
+                        tagListIndex.add(0)
+                        tagListMax.add(value.toInt()-1)
+                        //Toast.makeText(applicationContext , tagListInit[i] , Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        /* 수정전
+        else {
+            fullTranslateMode = true
+            translateOn = true
 
             cusWebView2.evaluateJavascript(
-                "javascript:(function getPTagText(){\n" +
+                "javascript:(function getWindowHeight(){\n" +
                         "   return window.innerHeight;\n" +
                         "})()"
             ){value ->  innerWindowHeight = value.toInt()
@@ -541,7 +702,7 @@ class MainActivity : AppCompatActivity() {
                 maxTagLiIndex = value.toInt()
                 tagLiIndex = 0
             }
-        }
+        }*/ //수정전
 
         /*
     cusWebView2.evaluateJavascript(
@@ -586,7 +747,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun openSettingFragment(){
+        supportFragmentManager
+            .beginTransaction()
+     //       .replace(R.id.nav_host_fragment_content_main,TranslateFragment())
+          //  .add(R.id.setting_fragment,TranslateFragment())
+           // .add(R.id.setting_fragmentetting()),s
+            .setReorderingAllowed(true)
+            .addToBackStack(null)
+            .commit()
+        //제작중
 
+    }
 
     fun translateScreenshot() : File?{
         //fun View.taranslateScreenshot() : File?{

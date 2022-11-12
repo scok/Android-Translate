@@ -1,7 +1,9 @@
 package com.example.translation.ui.webtranslate
 
+import android.app.Activity
 import android.os.AsyncTask
 import android.util.Log
+import com.example.translation.MainActivity
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import java.io.*
@@ -16,8 +18,8 @@ class ApiTranslateNmt(translationText: String) : AsyncTask<String, Void, String>
     var translationtext = translationText
     @Deprecated("Deprecated in Java")
     override fun doInBackground(vararg params: String?): String {
-        val clientId = "w5lgfrssck"
-        val clientSecret = "tct9yx0oteeuixAnAdIOETTtKiZFhixSLzNw3vvM"
+        val clientId : String = "ucbpb641nm"
+        val clientSecret : String = "cSoECdb0oHi3fOuuLm5MCvGc3UBJVctC9Sfdw0vS"
 
         val apiURL = "https://naveropenapi.apigw.ntruss.com/nmt/v1/translation"
 

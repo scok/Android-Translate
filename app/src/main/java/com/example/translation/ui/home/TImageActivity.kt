@@ -44,6 +44,10 @@ import java.io.*
 import java.net.URLEncoder
 
 // 이미지 번역 클래스
+var image_dir2 : String = ""
+const val clientId : String = "ucbpb641nm"
+const val clientSecret : String = "cSoECdb0oHi3fOuuLm5MCvGc3UBJVctC9Sfdw0vS"
+
 class TImageActivity : AppCompatActivity() {
 
     // 이미지 파일 다운로드 변수
@@ -113,7 +117,7 @@ class TImageActivity : AppCompatActivity() {
                     response: Response<PapagoEntity>
                 ) {
                     if(response.isSuccessful){
-                        
+
                         // 번역된 이미지 파일 값을 비트맵으로 변환 후 이미지 뷰에 표시
                         val imageStr = response.body()?.data?.renderedImage.toString()
                         val bytePlainOrg = Base64.decode(imageStr,0)
