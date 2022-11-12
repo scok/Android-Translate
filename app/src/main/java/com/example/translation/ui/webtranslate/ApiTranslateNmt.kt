@@ -20,7 +20,6 @@ class ApiTranslateNmt(translationText: String) : AsyncTask<String, Void, String>
     override fun doInBackground(vararg params: String?): String {
         val clientId : String = "ucbpb641nm"
         val clientSecret : String = "cSoECdb0oHi3fOuuLm5MCvGc3UBJVctC9Sfdw0vS"
-
         val apiURL = "https://naveropenapi.apigw.ntruss.com/nmt/v1/translation"
 
         val text: String = try{

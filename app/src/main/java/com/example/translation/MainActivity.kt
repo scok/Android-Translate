@@ -529,7 +529,6 @@ class MainActivity : AppCompatActivity() {
                         }
                 }
                 */
-                //----------------------------------------//
                 //Log.v("번역","${translateStep} / ${tagListEnable.size} / ${tagListIndex[translateStep]} / ${tagListMax[translateStep]} /${tagListEnable[translateStep]}")
                 //Toast.makeText(applicationContext , "${translateStep.toString()}" , Toast.LENGTH_SHORT).show()
                 if (tagListIndex[translateStep].toInt() == tagListMax[translateStep].toInt()){ //특정태그를 전부 번역하면 해당 태그를 번역할 목록에서 제거
@@ -537,7 +536,6 @@ class MainActivity : AppCompatActivity() {
                     tagListIndex.removeAt(translateStep)
                     tagListMax.removeAt(translateStep)
                     // Log.v("번역","${translateStep.toString()} / ${tagListEnable.size.toString()} /${tagListEnable[translateStep]} / 제거됨")
-                    // translateStep -= 1
                     // Log.v("번역","${translateStep.toString()}")
                 }
                 else {

@@ -24,6 +24,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.example.translation.R
 import kotlinx.android.synthetic.main.activity_timage.*
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -47,7 +48,6 @@ import java.net.URLEncoder
 var image_dir2 : String = ""
 const val clientId : String = "ucbpb641nm"
 const val clientSecret : String = "cSoECdb0oHi3fOuuLm5MCvGc3UBJVctC9Sfdw0vS"
-
 class TImageActivity : AppCompatActivity() {
 
     // 이미지 파일 다운로드 변수
@@ -101,12 +101,12 @@ class TImageActivity : AppCompatActivity() {
             val service = client.create(PapagoService::class.java)
 
             val partMap = HashMap<String, RequestBody>()
-            val trsource = RequestBody.create(MediaType.parse("text/plain"),target_Language)
-            val trtarget = RequestBody.create(MediaType.parse("text/plain"),"ko")
+            val trsource = RequestBody.create("text/plain".toMediaTypeOrNull() ,target_Language)
+            val trtarget = RequestBody.create("text/plain".toMediaTypeOrNull() ,"ko")
             partMap.put("source",trsource)
             partMap.put("target",trtarget)
 
-            val requestFile = RequestBody.create(MediaType.parse("image/jpeg"),file)
+            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull() ,file)
             val body : MultipartBody.Part = MultipartBody.Part.createFormData("image",file.name,requestFile)
 
             // 이미지 파일 번역
