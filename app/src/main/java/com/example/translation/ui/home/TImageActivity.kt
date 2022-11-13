@@ -110,7 +110,8 @@ class TImageActivity : AppCompatActivity() {
             val body : MultipartBody.Part = MultipartBody.Part.createFormData("image",file.name,requestFile)
 
             // 이미지 파일 번역
-            val call : Call<PapagoEntity> = service.transferPapago("w5lgfrssck","tct9yx0oteeuixAnAdIOETTtKiZFhixSLzNw3vvM",body,partMap)
+            val call : Call<PapagoEntity> = service.transferPapago(clientId,
+                com.example.translation.clientSecret,body,partMap)
             call.enqueue(object: Callback<PapagoEntity> {
                 override fun onResponse(
                     call: Call<PapagoEntity>,
